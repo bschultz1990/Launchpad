@@ -8,7 +8,7 @@
 
 ; TODO: Get winx and winy positions before a msg box pops up.
 ; Use those values when the main GUI pops up again.
-; TODO: 
+
 
 #include <Array.au3>
 #include <AutoItConstants.au3>
