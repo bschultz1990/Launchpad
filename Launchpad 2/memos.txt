@@ -1,0 +1,36 @@
+
+If (StringRegExp($pmtString, $regexAMZ, 0, 1) = 1) Then
+    MsgBox(0, "Result", "Amazon Payments")
+    ElseIf(StringRegExp($pmtString, $regexCRD, 0, 1) = 1) Then
+        MsgBox(0, "Result", "Card")
+    ElseIf(StringRegExp($pmtString,$regexPPL , 0, 1) = 1) Then
+        MsgBox(0, "Result", "PayPal")
+    Else
+        MsgBox(0, "Result", "No match.")
+EndIf
+
+
+
+$pmtString = "Charge P01-3535609-8398673-C984342 with"
+; Amazon Payments memo
+$pmtArray = StringRegExp($pmtString, 'P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}', 1, 1)
+; Match P01-(any capital or lowercase letter or number 7 times)-(same)-(same) OR 
+; Match P01-(any capital or lowercase letter or number 7 times)-(same)
+
+;~ ; Credit Card payment memo
+$pmtArray = StringRegExp($pmtString, '\d{11}', 1, 1)
+;~ ; Match 11 digits (0-9) in a row.
+
+; PayPal memo:
+$pmtArray = StringRegExp($pmtString, '[A-Za-z0-9]{17}', 1, 1)
+ _ArrayDisplay($pmtArray)
+
+
+;~ Amazon Payments:
+;~ Charge P01-3535609-8398673-C984342 with
+
+;~ Credit Card:
+;~ Order 114463 Authorize.Net Credit Card Charge Approved: Visa ending in 0026 (expires 05/22) (Transaction ID 43010654272)
+
+;~ PayPal:
+;~ Order 116049 YITH PayPal EC payment (ID: 2JF22636EF136491T)
