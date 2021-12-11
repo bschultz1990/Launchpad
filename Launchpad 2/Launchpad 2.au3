@@ -140,7 +140,7 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 ; ----------------------------------------------------------------------
 While 1
 	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
-	
+
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
 	HotKeySet("^!i", "orderInfo")
 
@@ -243,7 +243,7 @@ Func btnAzCst() ;
 			ControlSend("New Customer", "", 69, "ccc") ; Select "Canada" so auto State lookup works.
 			ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 			ClipPut($orderArray[17]) ; Load phone number
-			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
+			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ;
 			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
 		EndIf
 	ClipPut($orderArray[8]); Load First Name
@@ -293,7 +293,7 @@ EndFunc ; azPmt()
 Func bypassAndInvoice()
 	WinWaitActive("Process Credit Card") ; Credit card screen
 	Sleep(200) ; TODO: Clean this up. Look for a legit button to press using Advanced Mode.
-	Send("{TAB}{TAB}{TAB}{TAB}{TAB}") 
+	Send("{TAB}{TAB}{TAB}{TAB}{TAB}")
 	Sleep(200)
 	Send("{SPACE}")
 	Sleep(200)
@@ -316,7 +316,7 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	WinActivate($ChromeWindow) 
+	WinActivate($ChromeWindow)
 	Send("^t") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($cartSearch[0]) ; Load first part of Cart Search url
@@ -334,7 +334,7 @@ EndFunc ; ctLookup()
 
 
 Func ebLook()
-	WinActivate($ChromeWindow) 
+	WinActivate($ChromeWindow)
 	Send("^t") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($ebaySearch) ; Load eBay search url
@@ -366,7 +366,7 @@ Func ebCst()
 		ClipPut($orderArray[14]) ; Load City
 		ControlSend("New Customer", "", 72, "^v") ; Paste City
 		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
+		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ;
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
 		ClipPut($orderArray[16]) ; Load Postal Code
 		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
@@ -529,7 +529,7 @@ Func showCartButtons()
 	GUICtrlSetState($Btn_CtCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show resubmit payment button.
 	GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW); Show memo notification
-	
+
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
 	HotKeySet("^!4", "inputMemo") ; Enable memo hotkey
@@ -582,7 +582,7 @@ Func hideCartButtons()
 	GUICtrlSetState($Btn_CtCard, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtPayPal, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtAmazon, $GUI_DISABLE + $GUI_HIDE)
-	
+
 	HotKeySet("^!a") ; Disable lookup hotkey
 	HotKeySet("^!c") ; Disable enter cst. hotkey
 	HotKeySet("^!p") ; Disable payment hotkey
