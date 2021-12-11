@@ -6,11 +6,7 @@
 ; Language Reference
 ; https://www.autoitscript.com/autoit3/docs/intro/lang_operators.htm
 
-; TODO: Cart customer input is done. Work on payment memo functions next, starting with Card.\\
-
-; TODO: Write and read to a custom settings file (.ini?). Store window coord values in winx and winy variables.
-; Write to this file every so often. Find a way to loop while freeing up the rest of the script.
-; For now, get winx and winy positions before a msg box pops up.
+; TODO: Get winx and winy positions before a msg box pops up.
 ; Use those values when the main GUI pops up again.
 
 #include <Array.au3>
