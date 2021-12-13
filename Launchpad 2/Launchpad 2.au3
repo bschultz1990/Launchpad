@@ -1,17 +1,10 @@
 ; Function Reference
 ; https://www.autoitscript.com/autoit3/docs/functions.htm
 
-; TODO: Show cart order number in status bar.
-; TODO: Show WalMart order number in status bar as part of Address Lookup.
-
 ; Language Reference
 ; https://www.autoitscript.com/autoit3/docs/intro/lang_operators.htm
 
-; TODO: Cart customer input is done. Work on payment memo functions next, starting with Card.\\
-
-; TODO: Write and read to a custom settings file (.ini?). Store window coord values in winx and winy variables.
-; Write to this file every so often. Find a way to loop while freeing up the rest of the script.
-; For now, get winx and winy positions before a msg box pops up.
+; TODO: For now, get winx and winy positions before a msg box pops up.
 ; Use those values when the main GUI pops up again.
 
 #include <Array.au3>
@@ -43,7 +36,7 @@ Global $orderArray
 Global $EvosusWindow = "Evosus";
 Global $ShipworksWindow = "ShipWorks"
 Global $ChromeWindow = "Chrome"
-Global $pmtMemo = ""
+Global $pmtMemo = "" ; Not sure if we need this any more.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
@@ -172,7 +165,7 @@ While 1
 
 
 	GUICtrlSetOnEvent($Btn_WmAddress, "wmAddress") ; WAL-MART
-	GUICtrlSetOnEvent($Btn_WmCst, "ebCst")
+	GUICtrlSetOnEvent($Btn_WmCst, "wmCst")
 	GUICtrlSetOnEvent($Btn_WmPmt, "wmPmt")
 WEnd
 ; END EVENTS SECTION
@@ -212,12 +205,12 @@ EndFunc ; $Btn_Order
 
 Func btnAzAddress()
 	WinActivate($ChromeWindow)
-	Send("^t") ; Make new tab. Automatically focuses address bar.
+	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($AmazonSearch) ; Load first part of Amazon search url
-	Send("^v") ; Paste search url into address bar
+	Send("{CTRLDOWN}v{CTRLUP}") ; Paste search url into address bar
 	ClipPut($orderArray[3]) ; Load Amazon order number
-	Send("^v{ENTER}") ; Paste Amazon order number and GO
+	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste Amazon order number and GO
 
 	btnAddress()
 EndFunc ; btnAzAddress()
@@ -229,7 +222,7 @@ Func btnAddress()
 		ControlClick($EvosusWindow, "Street Name", 49); Click on Street Name to clear Address Field
 		ControlClick($EvosusWindow, "Address", 52); Click on Address field
 		ControlFocus ($EvosusWindow, "", 63); Focus address field in the Evosus window
-		ControlSend($EvosusWindow, "", 63, "^v{ENTER}")
+		ControlSend($EvosusWindow, "", 63, "{CTRLDOWN}v{CTRLUP}{ENTER}")
 		Else
 			MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
 			orderInfo() ; Show user info box right away.
@@ -248,7 +241,7 @@ Func btnAzCst() ;
 			ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 			ClipPut($orderArray[17]) ; Load phone number
 			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
-			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
+			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 		EndIf
 	ClipPut($orderArray[8]); Load First Name
 	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
@@ -288,7 +281,6 @@ Func azPmt()
 	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
 	Sleep(120)
 	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	; TODO: Hover over "Save Payment" button, but don't use MouseMove.
 	bypassAndInvoice()
 
 EndFunc ; azPmt()
@@ -321,14 +313,14 @@ EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
 	WinActivate($ChromeWindow) 
-	Send("^t") ; Make new tab. Automatically focuses address bar.
+	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($cartSearch[0]) ; Load first part of Cart Search url
-	Send("^v") ; Paste first part of Cart Search url
+	Send("{CTRLDOWN}v{CTRLUP}") ; Paste first part of Cart Search url
 	ClipPut($orderArray[2]) ; Load Cart Order Number
-	Send("^v") ; Paste Cart order number
+	Send("{CTRLDOWN}v{CTRLUP}") ; Paste Cart order number
 	ClipPut($cartSearch[1]) ; Load last part of Cart search url
-	Send("^v{ENTER}") ; Paste last part of Cart search url and GO.
+	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste last part of Cart search url and GO.
 
 	If WinActivate ($ChromeWindow) = 0 Then
 		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
@@ -339,12 +331,12 @@ EndFunc ; ctLookup()
 
 Func ebLook()
 	WinActivate($ChromeWindow) 
-	Send("^t") ; Make new tab. Automatically focuses address bar.
+	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($ebaySearch) ; Load eBay search url
-	Send("^v") ; Paste eBay search url into address bar
+	Send("{CTRLDOWN}v{CTRLUP}") ; Paste eBay search url into address bar
 	ClipPut($orderArray[4]) ; Load eBay order number
-	Send("^v{ENTER}") ; Paste eBay order number into address bar and GO
+	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste eBay order number into address bar and GO
 
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
@@ -356,22 +348,22 @@ Func ebCst()
 		newCstWinCheck() ; Check for New Customer window
 
 		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "^v") ; Paste First Name
+		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "^v") ; Paste Last Name
+		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
 		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "^v") ; Paste Company Name
+		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
 		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "^v") ; Paste Address Line 1
+		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
 		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "^v") ; Paste Address Line 2
+		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
 
 		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
 		ClipPut($orderArray[14]) ; Load City
-		ControlSend("New Customer", "", 72, "^v") ; Paste City
+		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
 		ClipPut($orderArray[17]) ; Load phone number
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
+		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 		ClipPut($orderArray[16]) ; Load Postal Code
 		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
 
@@ -385,7 +377,7 @@ Func ebPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[4]) ; Load eBay order number
 	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste eBay Order Number
+	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste eBay Order Number
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
@@ -398,7 +390,6 @@ Func ebPmt()
 	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
 	Sleep(120)
 	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	; TODO: Hover over "Save Payment" button, but don't use MouseMove.
 
 	bypassAndInvoice()
 EndFunc ; ebPmt()
@@ -411,26 +402,26 @@ Func ctCst()
 		newCstWinCheck()
 
 		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "^v") ; Paste First Name
+		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "^v") ; Paste Last Name
+		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
 		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "^v") ; Paste Company Name
+		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
 		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "^v") ; Paste Address Line 1
+		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
 		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "^v") ; Paste Address Line 2
+		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
 		ClipPut($orderArray[17]) ; Load phone number
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
+		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 		ClipPut($orderArray[21]) ; Load email address
-		ControlSend("New Customer", "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "^v") ; Paste email address
+		ControlSend("New Customer", "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "{CTRLDOWN}v{CTRLUP}") ; Paste email address
 			; TODO: Add a preferences screen.
 			; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
 			ClipPut($orderArray[14]) ; Load City
-			ControlSend("New Customer", "", 72, "^v") ; Paste City
+			ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
 			; Else, do this:
 		ClipPut($orderArray[16]) ; Load Postal Code
-		ControlSend("New Customer", "", 71, "^v{F6}") ; Paste Postal Code. Look up City and State.
+		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
 
 		Else
 			MsgBox(64, "Missing Order Info.", "Zip code line nonexistent. Double check order details with the info button.") ; Info box.
@@ -443,7 +434,7 @@ Func ctPmt()
 	ClipPut($orderArray[3]) ; Load Amazon Order Number
 	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
 	ClipPut($pmtMemo[0]) ; Load payment memo
-	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste payment memo
+	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste payment memo
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
@@ -467,18 +458,15 @@ Func ctPmt()
 			ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
 			Sleep(120)
 	EndIf
-
-	; TODO: Hover over "Save Payment" button, but don't use MouseMove.
 	bypassAndInvoice()
 EndFunc ; ctPmt
 
-
 Func wmAddress()
 	WinActivate($ChromeWindow)
-	Send("^t") ; Make new tab. Automatically focuses address bar.
+	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($wmSearch) ; Load WalMart Seller Central
-	Send("^v{ENTER}") ; Paste WalMart Seller Central and GO
+	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste WalMart Seller Central and GO
 
 	If WinActivate ($ChromeWindow) = 0 Then
 		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
@@ -489,19 +477,22 @@ Func wmAddress()
 	GUICtrlSetData($statusBar, "Copied WM Order number. Paste into Chrome.")
 EndFunc ; wmAddress()
 
+Func wmCst()
+	GUICtrlSetData($statusBar, $orderArray[2]); Show WalMart order number in status bar.
+	ebCst()
+EndFunc ; wmCst()
 
 Func wmPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[2]) ; Load Wal-Mart order number
 	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste Wal-Mart Order Number
+	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste Wal-Mart Order Number
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
 	Send("{PGDN}")
 	Sleep(120)
 	Send("{PGDN}") ; Select WalMart method
-	; TODO: Hover over "Save Payment" button, but don't use MouseMove.
 
 	bypassAndInvoice()
 EndFunc ; wmPmt()
@@ -621,7 +612,8 @@ EndFunc ; clearOrder
 Func importOrder()
 	GUISetState(@SW_HIDE, $AppTitle) ; Hide the main window
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
-	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128,@DesktopWidth-$AppWidth, @DesktopHeight-$AppHeight-50)
+	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
+	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1])
 	$orderArray = StringSplit($input, "	")
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
@@ -641,6 +633,7 @@ Func importOrder()
 
 		ElseIf $orderArray[1] = "Earth Sense" Then
 			GUICtrlSetData($orderBar, "Cart Order")
+			GUICtrlSetData($statusBar, $orderArray[2]) ; Show cart order number in status bar.
 
 			hidePaymentButtons()
 			hideAmazonButtons()
@@ -678,7 +671,8 @@ EndFunc ; importOrder()
 Func inputMemo()
 	GUISetState(@SW_HIDE, $AppTitle) ;Hide the main window
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
-	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128,@DesktopWidth-$AppWidth, @DesktopHeight-$AppHeight-50)
+	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
+	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1])
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
