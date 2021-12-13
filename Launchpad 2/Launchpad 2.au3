@@ -1,14 +1,18 @@
 ; Function Reference
 ; https://www.autoitscript.com/autoit3/docs/functions.htm
 
-
+; TODO: Show cart order number in status bar.
+; TODO: Show WalMart order number in status bar as part of Address Lookup.
 
 ; Language Reference
 ; https://www.autoitscript.com/autoit3/docs/intro/lang_operators.htm
 
-; TODO: Get winx and winy positions before a msg box pops up.
-; Use those values when the main GUI pops up again.
+; TODO: Cart customer input is done. Work on payment memo functions next, starting with Card.\\
 
+; TODO: Write and read to a custom settings file (.ini?). Store window coord values in winx and winy variables.
+; Write to this file every so often. Find a way to loop while freeing up the rest of the script.
+; For now, get winx and winy positions before a msg box pops up.
+; Use those values when the main GUI pops up again.
 
 #include <Array.au3>
 #include <AutoItConstants.au3>
@@ -140,7 +144,7 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 ; ----------------------------------------------------------------------
 While 1
 	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
-
+	
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
 	HotKeySet("^!i", "orderInfo")
 
@@ -243,23 +247,23 @@ Func btnAzCst() ;
 			ControlSend("New Customer", "", 69, "ccc") ; Select "Canada" so auto State lookup works.
 			ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 			ClipPut($orderArray[17]) ; Load phone number
-			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ;
+			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
 			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
 		EndIf
 	ClipPut($orderArray[8]); Load First Name
-	ControlSend("New Customer", "", 68, "^v") ; Paste First Name
+	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 	ClipPut($orderArray[9]) ; Load Last Name
-	ControlSend("New Customer", "", 67, "^v") ; Paste Last Name
+	ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
 	ClipPut($orderArray[10]) ; Load Company Name
-	ControlSend("New Customer", "", 63, "^v") ; Paste Company Name
+	ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
 	ClipPut($orderArray[11]) ; Load Address Line 1
-	ControlSend("New Customer", "", 74, "^v") ; Paste Address Line 1
+	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
 	ClipPut($orderArray[12]); Load Address Line 2
-	ControlSend("New Customer", "", 73, "^v") ; Paste Address Line 2
+	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
 		; TODO: Add a preferences screen.
 		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
 		ClipPut($orderArray[14]) ; Load City
-		ControlSend("New Customer", "", 72, "^v") ; Paste City
+		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
 		; Else, do this:
 	ClipPut($orderArray[16]) ; Load Postal Code
 	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
@@ -275,7 +279,7 @@ Func azPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[3]) ; Load Amazon Order Number
 	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste Amazon Order Number
+	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste Amazon Order Number
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
@@ -293,7 +297,7 @@ EndFunc ; azPmt()
 Func bypassAndInvoice()
 	WinWaitActive("Process Credit Card") ; Credit card screen
 	Sleep(200) ; TODO: Clean this up. Look for a legit button to press using Advanced Mode.
-	Send("{TAB}{TAB}{TAB}{TAB}{TAB}")
+	Send("{TAB}{TAB}{TAB}{TAB}{TAB}") 
 	Sleep(200)
 	Send("{SPACE}")
 	Sleep(200)
@@ -316,7 +320,7 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	WinActivate($ChromeWindow)
+	WinActivate($ChromeWindow) 
 	Send("^t") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($cartSearch[0]) ; Load first part of Cart Search url
@@ -334,7 +338,7 @@ EndFunc ; ctLookup()
 
 
 Func ebLook()
-	WinActivate($ChromeWindow)
+	WinActivate($ChromeWindow) 
 	Send("^t") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($ebaySearch) ; Load eBay search url
@@ -366,7 +370,7 @@ Func ebCst()
 		ClipPut($orderArray[14]) ; Load City
 		ControlSend("New Customer", "", 72, "^v") ; Paste City
 		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ;
+		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "^v") ; Paste phone number
 		ClipPut($orderArray[16]) ; Load Postal Code
 		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
@@ -380,6 +384,7 @@ EndFunc ; ebLook()
 Func ebPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[4]) ; Load eBay order number
+	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
 	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste eBay Order Number
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
@@ -488,6 +493,7 @@ EndFunc ; wmAddress()
 Func wmPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[2]) ; Load Wal-Mart order number
+	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
 	ControlSend($EvosusWindow, "", "[ID:11]", "^v") ; Paste Wal-Mart Order Number
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
@@ -529,7 +535,7 @@ Func showCartButtons()
 	GUICtrlSetState($Btn_CtCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show resubmit payment button.
 	GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW); Show memo notification
-
+	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
 	HotKeySet("^!4", "inputMemo") ; Enable memo hotkey
@@ -552,8 +558,8 @@ Func hidePaymentButtons()
 	GUICtrlSetState($Btn_Memo, $GUI_DISABLE + $GUI_HIDE)
 	GUiCtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE)
 
-	HotKeySet("^!p") ; Disable payment hotkey
-	HotKeySet("^!4") ; Disable memo hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
+	HotKeySet("^!4", "") ; Disable memo hotkey
 EndFunc ;hidePaymentButtons
 
 Func hideAmazonButtons()
@@ -561,9 +567,9 @@ Func hideAmazonButtons()
 	GUICtrlSetState($Btn_AzCst, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_AzPmt, $GUI_DISABLE + $GUI_HIDE)
 
-	HotKeySet("^!a") ; Disable lookup hotkey
-	HotKeySet("^!c") ; Disable enter cst. hotkey
-	HotKeySet("^!p") ; Disable payment hotkey
+	HotKeySet("^!a", "") ; Disable lookup hotkey
+	HotKeySet("^!c", "") ; Disable enter cst. hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
 EndFunc ; hideAmazonButtons()
 
 Func hideEbayButtons()
@@ -571,9 +577,9 @@ Func hideEbayButtons()
 	GUICtrlSetState($Btn_EbCst, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_EbPmt, $GUI_DISABLE + $GUI_HIDE)
 
-	HotKeySet("^!a") ; Disable lookup hotkey
-	HotKeySet("^!c") ; Disable enter cst. hotkey
-	HotKeySet("^!p") ; Disable payment hotkey
+	HotKeySet("^!a", "") ; Disable lookup hotkey
+	HotKeySet("^!c", "") ; Disable enter cst. hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
 EndFunc ; hideEbayButtons()
 
 Func hideCartButtons()
@@ -582,11 +588,11 @@ Func hideCartButtons()
 	GUICtrlSetState($Btn_CtCard, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtPayPal, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtAmazon, $GUI_DISABLE + $GUI_HIDE)
-
-	HotKeySet("^!a") ; Disable lookup hotkey
-	HotKeySet("^!c") ; Disable enter cst. hotkey
-	HotKeySet("^!p") ; Disable payment hotkey
-	HotKeySet("^!4") ; Disable memo hotkey
+	
+	HotKeySet("^!a", "") ; Disable lookup hotkey
+	HotKeySet("^!c", "") ; Disable enter cst. hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
+	HotKeySet("^!4", "") ; Disable memo hotkey
 EndFunc ; hideCartButtons()
 
 Func hideWmButtons()
@@ -594,19 +600,19 @@ Func hideWmButtons()
 	GUICtrlSetState($Btn_WmCst, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_WmPmt, $GUI_DISABLE + $GUI_HIDE)
 
-	HotKeySet("^!a") ; Disable lookup hotkey
-	HotKeySet("^!c") ; Disable enter cst. hotkey
-	HotKeySet("^!p") ; Disable payment hotkey
+	HotKeySet("^!a", "") ; Disable lookup hotkey
+	HotKeySet("^!c", "") ; Disable enter cst. hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
 EndFunc ; hideWmButtons()
 
 Func clearOrder()
-		GUICtrlSetData($input, "")
-		GUICtrlSetData($orderArray, "") ; Clear order
-		GUICtrlSetData($orderBar, "") ; Clear order type
-		GUICtrlSetData($statusBar, "") ; Clear status bar
-		HotkeySet("^!a") ; Clear address button hotkey
-		HotkeySet("^!c") ; Clear customer lookup hotkey
-		HotkeySet("^!p") ; Clear payment hotkey
+	GUICtrlSetData($input, "")
+	GUICtrlSetData($orderArray, "") ; Clear order
+	GUICtrlSetData($orderBar, "") ; Clear order type
+	GUICtrlSetData($statusBar, "") ; Clear status bar
+	HotKeySet("^!a", "") ; Disable lookup hotkey
+	HotKeySet("^!c", "") ; Disable enter cst. hotkey
+	HotKeySet("^!p", "") ; Disable payment hotkey
 EndFunc ; clearOrder
 
 ; END GENERAL FUNCTIONS
@@ -673,6 +679,7 @@ Func inputMemo()
 	GUISetState(@SW_HIDE, $AppTitle) ;Hide the main window
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
 	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128,@DesktopWidth-$AppWidth, @DesktopHeight-$AppHeight-50)
+	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
 	    $pmtMemo = StringRegExp($memo, $regexAMZ, 1)
@@ -680,6 +687,8 @@ Func inputMemo()
 		hidePaymentButtons() ; Hide all payment buttons, but....
 		GUICtrlSetState($Btn_CtAmazon, $GUI_ENABLE + $GUI_SHOW); Show Amazon Payments button
 		GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
+		HotKeySet("^!p") ; Clear previous hotkey.
+		HotKeySet("^!p", "ctPmt") ; Set hotkey
 		Return $pmtMemo[0]
 
 
@@ -689,6 +698,8 @@ Func inputMemo()
 			hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_CtCard, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
+			HotKeySet("^!p") ; Clear previous hotkey.
+			HotKeySet("^!p", "ctPmt") ; Set hotkey
 			Return $pmtMemo[0]
 
 	    ElseIf(StringRegExp($memo, $regexPPL, 0)= 1) Then
@@ -697,6 +708,8 @@ Func inputMemo()
 			hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_CtPayPal, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
+			HotKeySet("^!p") ; Clear previous hotkey.
+			HotKeySet("^!p", "ctPmt") ; Set hotkey
 			Return $pmtMemo[0]
 
 	    Else
@@ -706,9 +719,6 @@ Func inputMemo()
 			GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW)
 	EndIf
 
-	HotKeySet("^!p") ; Clear previous hotkey.
-	HotKeySet("^!p", "ctPmt") ; Set hotkey
-	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 EndFunc ; inputMemo
 
 Func orderInfo()
