@@ -4,9 +4,6 @@
 ; Language Reference
 ; https://www.autoitscript.com/autoit3/docs/intro/lang_operators.htm
 
-; TODO: For now, get winx and winy positions before a msg box pops up.
-; Use those values when the main GUI pops up again.
-
 #include <Array.au3>
 #include <AutoItConstants.au3>
 #include <ButtonConstants.au3>
