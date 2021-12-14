@@ -123,7 +123,7 @@ hideWmButtons()
 hideCartButtons()
 hidePaymentButtons()
 
-GUISetState(@SW_SHOW)
+GUISetState(@SW_SHOW) ; Show the main GUI.
 WinActivate($MainWindow)
 WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 
@@ -133,6 +133,9 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 ; 							EVENTS SECTION 302
 ; ----------------------------------------------------------------------
 While 1
+	HotKeySet("^!q", "testFunc")
+
+
 	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
 	
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
@@ -160,7 +163,6 @@ While 1
 	GUICtrlSetOnEvent($Btn_CtPayPal, "ctPmt")
 	GUICtrlSetOnEvent($Btn_CtAmazon, "ctPmt")
 
-
 	GUICtrlSetOnEvent($Btn_WmAddress, "wmAddress") ; WAL-MART
 	GUICtrlSetOnEvent($Btn_WmCst, "wmCst")
 	GUICtrlSetOnEvent($Btn_WmPmt, "wmPmt")
@@ -172,7 +174,16 @@ WEnd
 ; ----------------------------------------------------------------------
 
 ; TEST FUNCTION SECTION
-
+Func testFunc()
+	If WinActivate("New Customer") = 0 Then
+	ControlClick($EvosusWindow, "Add Lead or Customer", 15) ; Click "Add Lead or Customer"
+	WinWaitActive("New Customer", "", 10)
+	EndIf
+	; If WinActive("New Customer") Not = 0 Then
+	; 	ControlSend("New Customer", "", 68, "FIRST_KID!") ; Write text in first name field
+	; EndIf
+	ControlSend("New Customer", "", 68, "FIRST_KID!") ; Write text in first name field
+EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
 Func newCstWinCheck()
@@ -233,11 +244,11 @@ Func btnAzCst() ;
 	newCstWinCheck() ; Check for New Customer window
 
 		If $orderArray[1] = "Amazon.ca" Then
-			ControlFocus("New Customer", "", 69)
-			ControlSend("New Customer", "", 69, "ccc") ; Select "Canada" so auto State lookup works.
+			ControlFocus("New Customer", "", 69) ; Focus the dropdown control
+			ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
 			ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 			ClipPut($orderArray[17]) ; Load phone number
-			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; 
+			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
 			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 		EndIf
 	ClipPut($orderArray[8]); Load First Name
@@ -273,11 +284,8 @@ Func azPmt()
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}") ; Select Amazon Method
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
+	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon Payments.
 	bypassAndInvoice()
 
 EndFunc ; azPmt()
@@ -378,16 +386,8 @@ Func ebPmt()
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}") ; Select eBay Method
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-	Sleep(120)
-	ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-
+	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - EBAY") ; Select Ebay payment method.
 	bypassAndInvoice()
 EndFunc ; ebPmt()
 
@@ -436,24 +436,16 @@ Func ctPmt()
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
 	If (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1  Then ; Check the card.
-		ControlSend($EvosusWindow, "", "[ID:10]", "{PGDN}")
-		Sleep(120)
-		ControlSend($EvosusWindow, "", "[ID:10]", "{PGDN}")
-		Sleep(120)
-		ControlSend($EvosusWindow, "", "[ID:10]", "{UP}")
+			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
+
 		ElseIf (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
-			ControlSend($EvosusWindow, "", "[ID:10]", "{PGDN}")
-			Sleep(120)
-			ControlSend($EvosusWindow, "", "[ID:10]", "{UP}")
+			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - PayPal") ; Select Paypal
+
 		ElseIf (StringRegExp($pmtMemo[0], $regexAMZ, 0)) = 1  Then ; Check Amazon memo
-			ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-			Sleep(120)
-			ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-			Sleep(120)
-			ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-			Sleep(120)
-			ControlSend($EvosusWindow, "", "[ID:10]", "{DOWN}")
-			Sleep(120)
+			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon
 	EndIf
 	bypassAndInvoice()
 EndFunc ; ctPmt
@@ -487,10 +479,8 @@ Func wmPmt()
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	Send("{PGDN}")
-	Sleep(120)
-	Send("{PGDN}") ; Select WalMart method
-
+	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
 	bypassAndInvoice()
 EndFunc ; wmPmt()
 
