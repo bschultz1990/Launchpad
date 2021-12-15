@@ -31,12 +31,14 @@ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$
 Global $input
 Global $orderArray
 Global $EvosusWindow = "Evosus";
+; Global $EvosusWindow = "TEST MODE!"
 Global $ShipworksWindow = "ShipWorks"
 Global $ChromeWindow = "Chrome"
 Global $pmtMemo = "" ; Not sure if we need this any more.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
+Global $regexPHN = "\b\d{10}"
 
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
 Global $ebaySearch = "https://www.ebay.com/sh/ord/details?srn=118139&orderid="
@@ -130,7 +132,7 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 ; END GUI SECTION
 
 ; ----------------------------------------------------------------------
-; 							EVENTS SECTION 302
+; 							EVENTS SECTION
 ; ----------------------------------------------------------------------
 While 1
 	HotKeySet("^!q", "testFunc")
@@ -146,6 +148,8 @@ While 1
 
 	HotKeySet("^!d", "evosusDeposit") ; Secret Evosus Deposit Function! :)
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
+	HotKeySet("^p", "poFocus") ; Secret po focus function.
+	HotKeySet("^l", "itemFocus") ; Secret item focus function.
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -175,23 +179,29 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-	If WinActivate("New Customer") = 0 Then
-	ControlClick($EvosusWindow, "Add Lead or Customer", 15) ; Click "Add Lead or Customer"
-	WinWaitActive("New Customer", "", 10)
-	EndIf
-	; If WinActive("New Customer") Not = 0 Then
-	; 	ControlSend("New Customer", "", 68, "FIRST_KID!") ; Write text in first name field
-	; EndIf
-	ControlSend("New Customer", "", 68, "FIRST_KID!") ; Write text in first name field
+
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
 Func newCstWinCheck()
 	If WinActivate("New Customer") = 0 Then
 	ControlClick($EvosusWindow, "Add Lead or Customer", 15) ; Click "Add Lead or Customer"
-	WinWaitActive("New Customer", "", 1) ; Wait a second for the New Customer window to appear.
+	WinWaitActive("New Customer", "", 2) ; Wait a second for the New Customer window to appear.
 	EndIf
 EndFunc ; newCstWinCheck()
+
+Func poFocus()
+	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"); Focus PO No. field.
+EndFunc ; poFocus()
+
+
+
+Func itemFocus()
+	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
+	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:18]"); Focus Item field
+EndFunc ; funcName()
+
+
 
 Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 	ControlClick($EvosusWindow, "Show Stock Status", 99) ; Click on "Show Stock Status"
@@ -237,11 +247,19 @@ Func btnAddress()
 	EndIf
 EndFunc ; $Btn_AzAddress
 
-Func btnAzCst() ;
+Func btnAzCst()
 	If UBound($orderArray) > 15 Then ; Check if zip code exists.
 	WinActivate($EvosusWindow)
 	WinActivate("New Customer")
 	newCstWinCheck() ; Check for New Customer window
+
+	; Fill in marketing information as part of customer entry.
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
 
 		If $orderArray[1] = "Amazon.ca" Then
 			ControlFocus("New Customer", "", 69) ; Focus the dropdown control
@@ -269,6 +287,9 @@ Func btnAzCst() ;
 	ClipPut($orderArray[16]) ; Load Postal Code
 	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
 
+	ControlFocus("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Focus "Save New Customer"
+	ControlClick("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Click "Save New Customer"
+
 	Else
 		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
 		orderInfo() ; Show user info box right away.
@@ -285,33 +306,28 @@ Func azPmt()
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
 	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon Payments.
+	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon") ; Select Amazon method.
 	bypassAndInvoice()
 
 EndFunc ; azPmt()
 
 
 Func bypassAndInvoice()
-	WinWaitActive("Process Credit Card") ; Credit card screen
-	Sleep(200) ; TODO: Clean this up. Look for a legit button to press using Advanced Mode.
-	Send("{TAB}{TAB}{TAB}{TAB}{TAB}") 
-	Sleep(200)
-	Send("{SPACE}")
-	Sleep(200)
-	WinWaitActive("Confirm Bypass")
+	WinWaitActive("Process Credit Card", "", 2)
+	ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
+	ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
+	WinWaitActive("Confirm Bypass", "", 2) ; click "Yes"
 	ControlClick("Confirm Bypass", "", "[ID:6]")
-	WinWaitActive("Payment")
-	Sleep(120)
-	ControlClick("Payment", "", "[ID:2]") ; OK
-	WinWaitActive("Deliver Items?")
-	Sleep(120)
+	WinWaitActive("Payment", "", 2) ; Wait for "Successfully saved payment"
+	ControlClick("Payment", "", "[ID:2]") ; Click "OK"
+	WinWaitActive("Deliver Items?", "", 2)
 	ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
 
 	; INVOICE ORDER
 	WinActivate($EvosusWindow, 10)
 	ControlClick($EvosusWindow, "", "[ID:233]") ; Options
 	Sleep(120)
-	Send("{DOWN}{DOWN}{DOWN}") ; TODO: Clean this up as well. Look for a legit menu option to select using Advanced Mode.
+	Send("{DOWN}{DOWN}{DOWN}")
 	Sleep(120)
 	Send("{ENTER}")
 EndFunc ; bypassAndInvoice()
@@ -352,6 +368,14 @@ Func ebCst()
 		WinActivate("New Customer")
 		newCstWinCheck() ; Check for New Customer window
 
+		; Fill in marketing information as part of customer entry.
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
+
 		ClipPut($orderArray[8]); Load First Name
 		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 		ClipPut($orderArray[9]) ; Load Last Name
@@ -371,7 +395,9 @@ Func ebCst()
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 		ClipPut($orderArray[16]) ; Load Postal Code
 		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-
+		
+		ControlFocus("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Focus "Save New Customer"
+		ControlClick("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Click "Save New Customer"
 		Else
 			MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
 			orderInfo() ; Show user info box right away.
@@ -398,6 +424,14 @@ Func ctCst()
 		WinActivate("New Customer")
 		newCstWinCheck()
 
+		; Fill in marketing information as part of customer entry.
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
+
 		ClipPut($orderArray[8]); Load First Name
 		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 		ClipPut($orderArray[9]) ; Load Last Name
@@ -419,7 +453,9 @@ Func ctCst()
 			; Else, do this:
 		ClipPut($orderArray[16]) ; Load Postal Code
 		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-
+		
+		ControlFocus("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Focus "Save New Customer"
+		ControlClick("New Customer", "Save New Customer >", "[CLASS:ThunderRT6CommandButton; INSTANCE:7]") ; Click "Save New Customer"
 		Else
 			MsgBox(64, "Missing Order Info.", "Zip code line nonexistent. Double check order details with the info button.") ; Info box.
 			orderInfo() ; Show user info box right away.
@@ -658,8 +694,8 @@ EndFunc ; importOrder()
 Func inputMemo()
 	GUISetState(@SW_HIDE, $AppTitle) ;Hide the main window
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
-	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
-	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1])
+	$mainWinPos = WinGetPos($AppTitle) ; Get main window position.
+	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ; Put InputBox where main window was.
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
