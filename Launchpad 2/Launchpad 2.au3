@@ -139,7 +139,7 @@ While 1
 
 
 	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
-
+	
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
 	HotKeySet("^!i", "orderInfo")
 
@@ -208,6 +208,7 @@ Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 EndFunc ; evosusStockLookup()
 
 Func evosusDeposit() ; Secret Evosus Deposit Function! :)
+	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
 
@@ -309,7 +310,7 @@ EndFunc ; azPmt()
 
 
 Func bypassAndInvoice()
-	WinWaitActive("Process Credit Card", "", 2)
+	WinWaitActive("Process Credit Card", "", 10)
 	ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
 	ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
 	WinWaitActive("Confirm Bypass", "", 2) ; click "Yes"
@@ -329,7 +330,7 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	WinActivate($ChromeWindow)
+	WinActivate($ChromeWindow) 
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($cartSearch[0]) ; Load first part of Cart Search url
@@ -347,7 +348,7 @@ EndFunc ; ctLookup()
 
 
 Func ebLook()
-	WinActivate($ChromeWindow)
+	WinActivate($ChromeWindow) 
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
 	ClipPut($ebaySearch) ; Load eBay search url
@@ -541,7 +542,7 @@ Func showCartButtons()
 	GUICtrlSetState($Btn_CtCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show resubmit payment button.
 	GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW); Show memo notification
-
+	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
 	HotKeySet("^!4", "inputMemo") ; Enable memo hotkey
@@ -594,7 +595,7 @@ Func hideCartButtons()
 	GUICtrlSetState($Btn_CtCard, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtPayPal, $GUI_DISABLE + $GUI_HIDE)
 	GUICtrlSetState($Btn_CtAmazon, $GUI_DISABLE + $GUI_HIDE)
-
+	
 	HotKeySet("^!a", "") ; Disable lookup hotkey
 	HotKeySet("^!c", "") ; Disable enter cst. hotkey
 	HotKeySet("^!p", "") ; Disable payment hotkey
@@ -631,7 +632,7 @@ Func importOrder()
 	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
 	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1])
 	$orderArray = StringSplit($input, "	")
-
+	
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If $orderArray[1] = "Amazon" Or $orderArray[1] = "Amazon.ca" Then
