@@ -40,6 +40,9 @@ Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
 Global $regexPHN = "\d{10}\>|\d{3}(-|\s)\d{3}(-|\s)\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\)\d{3}\d{4}|\(\d{3}\)-\d{3}-\d{4}"
 
+; \(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}
+; \d{10}$
+
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
 Global $ebaySearch = "https://www.ebay.com/sh/ord/details?srn=118139&orderid="
 Global $cartSearch[2] = ["https://pellethead.com/wp-admin/post.php?post=", "&action=edit"]
@@ -636,7 +639,7 @@ Func importOrder()
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If $orderArray[1] = "Amazon" Or $orderArray[1] = "Amazon.ca" Then
-		GUICtrlSetData($statusBar, $orderArray[3])
+		GUICtrlSetData($statusBar, $orderArray[3]&" - "&$orderArray[9])
 		If $orderArray[1] = "Amazon.ca" Then
 			GUICtrlSetData($orderBar, "Amazon.ca") ; Oh, Canada!
 			ElseIf $orderArray[1] = "Amazon" Then
@@ -651,7 +654,7 @@ Func importOrder()
 
 	ElseIf $orderArray[1] = "Earth Sense" Then
 		GUICtrlSetData($orderBar, "Cart Order")
-		GUICtrlSetData($statusBar, $orderArray[2]) ; Show cart order number in status bar.
+		GUICtrlSetData($statusBar, $orderArray[2]&" - "&$orderArray[9]) ; Show cart order number in status bar.
 
 		hidePaymentButtons()
 		hideAmazonButtons()
@@ -661,7 +664,7 @@ Func importOrder()
 
 	ElseIf $orderArray[1] = "esesstoves" Then
 		GUICtrlSetData($orderBar, "eBay Order")
-		GUICtrlSetData($statusBar, $orderArray[4])
+		GUICtrlSetData($statusBar, $orderArray[4]&" - "&$orderArray[9])
 		hidePaymentButtons()
 		hideAmazonButtons()
 		showEbayButtons()
