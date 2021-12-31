@@ -153,6 +153,7 @@ While 1
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
 	HotKeySet("^p", "poFocus") ; Secret po focus function.
 	HotKeySet("^l", "itemFocus") ; Secret item focus function.
+	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -197,7 +198,13 @@ Func poFocus()
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"); Focus PO No. field.
 EndFunc ; poFocus()
 
-
+Func printLabel()
+	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
+	WinWaitActive($ShipworksWindow, "")
+	; ControlClick($ShipworksWindow, "", "[CLASS:HwndWrapper[ShipWorks.exe;d7ea55d4-5775-46bf-be60-e51ba68230ef]; INSTANCE:1]", "left", 2, 135, 739)
+	; ControlSend($ShipworksWindow, "", "[CLASS:HwndWrapper[ShipWorks.exe;d7ea55d4-5775-46bf-be60-e51ba68230ef]; INSTANCE:1]", "{F10}")
+	Send("{F10}")
+EndFunc ; printLabel()
 
 Func itemFocus()
 	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
