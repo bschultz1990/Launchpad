@@ -524,9 +524,17 @@ Func wmPmt()
 EndFunc ; wmPmt()
 
 Func showAmazonButtons()
+
 	GUICtrlSetState($Btn_AzAddress, $GUI_ENABLE + $GUI_SHOW) ; Enable and show Amazon buttons.
 	GUICtrlSetState($Btn_AzCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_AzPmt, $GUI_ENABLE + $GUI_SHOW)
+
+	GUICtrlSetData($Btn_AzAddress, "Chk. Address") ; Re-set button labels. Keep them from disappearing.
+	GUICtrlSetData($Btn_AzCst, "Enter Cst.")
+	GUICtrlSetData($Btn_AzPmt, "Az Payment")
+	GUICtrlSetData($Btn_Info, "i")
+	GUICtrlSetData($Btn_Order, "Import Order")
+	GUICtrlSetData($Btn_Memo, "Enter memo -->")
 
 	HotKeySet("^!a", "btnAddress") ; Set hotkeys for Amazon buttons.
 	HotKeySet("^!c", "btnAzCst")
@@ -537,6 +545,13 @@ Func showEbayButtons()
 	GUICtrlSetState($Btn_ebLookCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_EbCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_EbPmt, $GUI_ENABLE + $GUI_SHOW)
+
+	GUICtrlSetData($Btn_ebLookCst, "Lookup Cst.") ; Re-set button labels. Keep them from disappearing.
+	GUICtrlSetData($Btn_EbCst, "Enter Cst.")
+	GUICtrlSetData($Btn_EbPmt, "eBay Payment")
+	GUICtrlSetData($Btn_Info, "i")
+	GUICtrlSetData($Btn_Order, "Import Order")
+	GUICtrlSetData($Btn_Memo, "Enter memo -->")
 
 	HotKeySet("^!a", "ebLook") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
@@ -552,6 +567,15 @@ Func showCartButtons()
 	GUICtrlSetState($Btn_CtCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show resubmit payment button.
 	GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW); Show memo notification
+
+	GUICtrlSetData($Btn_CtLookup, "Lookup Cst.") ; Re-set button labels. Keep them from disappearing.
+	GUICtrlSetData($Btn_CtCst, "Enter Cst.")
+	GUICtrlSetData($Btn_CtCard, "Pmt. - Card")
+	GUICtrlSetData($Btn_CtPayPal, "Pmt. - PayPal")
+	GUICtrlSetData($Btn_CtAmazon, "Payment - AZ")
+	GUICtrlSetData($Btn_Info, "i")
+	GUICtrlSetData($Btn_Order, "Import Order")
+	GUICtrlSetData($Btn_Memo, "Enter memo -->")
 	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
@@ -562,6 +586,13 @@ Func showWmButtons()
 	GUICtrlSetState($Btn_WmAddress, $GUI_ENABLE + $GUI_SHOW) ; Show Walmart Buttons
 	GUICtrlSetState($Btn_WmCst, $GUI_ENABLE + $GUI_SHOW)
 	GUICtrlSetState($Btn_WmPmt, $GUI_ENABLE + $GUI_SHOW)
+
+	GUICtrlSetData($Btn_WmAddress, "Lookup Cst.") ; Re-set button labels. Keep them from disappearing.
+	GUICtrlSetData($Btn_WmCst, "Enter Cst.")
+	GUICtrlSetData($Btn_WmPmt, "WM Payment")
+	GUICtrlSetData($Btn_Info, "i")
+	GUICtrlSetData($Btn_Order, "Import Order")
+	GUICtrlSetData($Btn_Memo, "Enter memo -->")
 
 	HotKeySet("^!a", "btnAddress") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
