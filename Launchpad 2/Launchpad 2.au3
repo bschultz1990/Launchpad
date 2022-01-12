@@ -38,10 +38,9 @@ Global $pmtMemo[1] ; Payment memo placeholder until we have some data.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
-Global $regexPHN = "\d{10}\>|\d{3}(-|\s)\d{3}(-|\s)\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\)\d{3}\d{4}|\(\d{3}\)-\d{3}-\d{4}"
+Global $regexPHN = "\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}\>"
+Global $regexPHN10 = "\d{10}$"
 
-; \(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}\>
-; \d{10}$
 
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
 Global $ebaySearch = "https://www.ebay.com/sh/ord/details?srn=118139&orderid="
@@ -720,6 +719,14 @@ Func importOrder()
 		hideCartButtons()
 		hideWmButtons()
 	EndIf
+
+If UBound($orderArray) > 16 Then
+	If StringRegExp($orderArray[17], $regexPHN10, 0, 2) = 1 Then ; Yes or no result? Offset of 2.
+		$newPhone = StringRegExp($orderArray[17], $regexPHN10, 1, 2); Return an array of matches.
+		GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+		$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
+	EndIf
+EndIf
 
 ; If StringRegExp($orderArray[17], $regexPHN, 0) Not = 0 Then
 ; 	$newPhone = StringRegExp($orderArray[17], $regexPHN, 1)
