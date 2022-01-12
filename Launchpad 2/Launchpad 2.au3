@@ -40,7 +40,7 @@ Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
 Global $regexPHN = "\d{10}\>|\d{3}(-|\s)\d{3}(-|\s)\d{4}|\(\d{3}\)\d{3}-\d{4}|\(\d{3}\)\d{3}\d{4}|\(\d{3}\)-\d{3}-\d{4}"
 
-; \(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}
+; \(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}\>
 ; \d{10}$
 
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
@@ -151,7 +151,6 @@ While 1
 
 	HotKeySet("^!d", "evosusDeposit") ; Secret Evosus Deposit Function! :)
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
-	HotKeySet("^p", "poFocus") ; Secret po focus function.
 	HotKeySet("^l", "itemFocus") ; Secret item focus function.
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 
@@ -194,10 +193,6 @@ Func newCstWinCheck()
 	EndIf
 EndFunc ; newCstWinCheck()
 
-Func poFocus()
-	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"); Focus PO No. field.
-EndFunc ; poFocus()
-
 Func printLabel()
 	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
 	WinWaitActive($ShipworksWindow, "")
@@ -214,6 +209,7 @@ EndFunc ; funcName()
 
 
 Func evosusStockLookup() ; Secret Stock Lookup Function! :)
+	WinActivate($EvosusWindow)
 	ControlClick($EvosusWindow, "Show Stock Status", 99) ; Click on "Show Stock Status"
 EndFunc ; evosusStockLookup()
 
@@ -474,7 +470,7 @@ Func ctPmt()
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	If (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1  Then ; Check the card.
+	If (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
 			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
 			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
 
@@ -534,7 +530,7 @@ Func showAmazonButtons()
 	GUICtrlSetData($Btn_AzPmt, "Az Payment")
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
-	GUICtrlSetData($Btn_Memo, "Enter memo -->")
+	GUICtrlSetData($Btn_Memo, "$")
 
 	HotKeySet("^!a", "btnAddress") ; Set hotkeys for Amazon buttons.
 	HotKeySet("^!c", "btnAzCst")
@@ -551,7 +547,7 @@ Func showEbayButtons()
 	GUICtrlSetData($Btn_EbPmt, "eBay Payment")
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
-	GUICtrlSetData($Btn_Memo, "Enter memo -->")
+	GUICtrlSetData($Btn_Memo, "$")
 
 	HotKeySet("^!a", "ebLook") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
@@ -575,7 +571,7 @@ Func showCartButtons()
 	GUICtrlSetData($Btn_CtAmazon, "Payment - AZ")
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
-	GUICtrlSetData($Btn_Memo, "Enter memo -->")
+	GUICtrlSetData($Btn_Memo, "$")
 	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
@@ -592,7 +588,7 @@ Func showWmButtons()
 	GUICtrlSetData($Btn_WmPmt, "WM Payment")
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
-	GUICtrlSetData($Btn_Memo, "Enter memo -->")
+	GUICtrlSetData($Btn_Memo, "$")
 
 	HotKeySet("^!a", "btnAddress") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
@@ -751,22 +747,21 @@ Func inputMemo()
 		HotKeySet("^!p", "ctPmt") ; Set hotkey
 		Return $pmtMemo[0]
 
-
-	    ElseIf(StringRegExp($memo, $regexCRD, 0) = 1) Then
-	        $pmtMemo = StringRegExp($memo, $regexCRD, 1)
-	        GUICtrlSetData($statusBar,"Card: "&$pmtMemo[0])
-			hidePaymentButtons() ; Hide all payment buttons, but....
-			GUICtrlSetState($Btn_CtCard, $GUI_ENABLE + $GUI_SHOW)
-			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
-			HotKeySet("^!p") ; Clear previous hotkey.
-			HotKeySet("^!p", "ctPmt") ; Set hotkey
-			Return $pmtMemo[0]
-
 	    ElseIf(StringRegExp($memo, $regexPPL, 0)= 1) Then
 	        $pmtMemo = StringRegExp($memo, $regexPPL, 1)
 	        GUICtrlSetData($statusBar,"PayPal: " &$pmtMemo[0])
 			hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_CtPayPal, $GUI_ENABLE + $GUI_SHOW)
+			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
+			HotKeySet("^!p") ; Clear previous hotkey.
+			HotKeySet("^!p", "ctPmt") ; Set hotkey
+			Return $pmtMemo[0]
+
+	    ElseIf(StringRegExp($memo, $regexCRD, 0) = 1) And (StringRegExp($pmtMemo, $regexPPL, 0)) = 0  Then
+	        $pmtMemo = StringRegExp($memo, $regexCRD, 1)
+	        GUICtrlSetData($statusBar,"Card: "&$pmtMemo[0])
+			hidePaymentButtons() ; Hide all payment buttons, but....
+			GUICtrlSetState($Btn_CtCard, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
 			HotKeySet("^!p") ; Clear previous hotkey.
 			HotKeySet("^!p", "ctPmt") ; Set hotkey
