@@ -38,7 +38,7 @@ Global $pmtMemo[1] ; Payment memo placeholder until we have some data.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
-Global $regexPHN = "\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}\>"
+Global $regexPHN = "\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}"
 Global $regexPHN10 = "\d{10}$"
 
 
@@ -723,6 +723,10 @@ Func importOrder()
 If UBound($orderArray) > 16 Then
 	If StringRegExp($orderArray[17], $regexPHN10, 0, 2) = 1 Then ; Yes or no result? Offset of 2.
 		$newPhone = StringRegExp($orderArray[17], $regexPHN10, 1, 2); Return an array of matches.
+		GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+		$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
+	Else 
+		$newPhone = StringRegExp($orderArray[17], $regexPHN, 1); No offset. Return an array of matches.
 		GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
 		$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
 	EndIf
