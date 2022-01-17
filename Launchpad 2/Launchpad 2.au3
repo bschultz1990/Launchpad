@@ -688,6 +688,7 @@ Func importOrder()
 	ElseIf $orderArray[1] = "Earth Sense" Then
 		GUICtrlSetData($orderBar, "Cart Order")
 		GUICtrlSetData($statusBar, $orderArray[2]&" - "&$orderArray[9]) ; Show cart order number in status bar.
+		phoneFormatter()
 
 		hidePaymentButtons()
 		hideAmazonButtons()
@@ -698,6 +699,8 @@ Func importOrder()
 	ElseIf $orderArray[1] = "esesstoves" Then
 		GUICtrlSetData($orderBar, "eBay Order")
 		GUICtrlSetData($statusBar, $orderArray[4]&" - "&$orderArray[9])
+		phoneFormatter()
+
 		hidePaymentButtons()
 		hideAmazonButtons()
 		showEbayButtons()
@@ -706,6 +709,8 @@ Func importOrder()
 
 	ElseIf $orderArray[1] = "WalMart" Then
 		GUICtrlSetData($orderBar, "WalMart Order")
+		phoneFormatter()
+
 		hidePaymentButtons()
 		hideAmazonButtons()
 		hideEbayButtons()
@@ -719,27 +724,23 @@ Func importOrder()
 		hideCartButtons()
 		hideWmButtons()
 	EndIf
-
-If UBound($orderArray) > 16 Then
-	If StringRegExp($orderArray[17], $regexPHN10, 0, 2) = 1 Then ; Yes or no result? Offset of 2.
-		$newPhone = StringRegExp($orderArray[17], $regexPHN10, 1, 2); Return an array of matches.
-		GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
-		$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
-	Else 
-		$newPhone = StringRegExp($orderArray[17], $regexPHN, 1); No offset. Return an array of matches.
-		GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
-		$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
-	EndIf
-EndIf
-
-; If StringRegExp($orderArray[17], $regexPHN, 0) Not = 0 Then
-; 	$newPhone = StringRegExp($orderArray[17], $regexPHN, 1)
-; 	GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
-; 	Else
-; 		GUICtrlSetData($statusBar, StringRegExp($orderArray[17], $regexPHN, 1, 3)) ; Display number.
-; EndIf
-
 EndFunc ; importOrder()
+
+Func phoneFormatter()
+	If UBound($orderArray) > 16 Then
+		If StringRegExp($orderArray[17], $regexPHN10, 0, 2) = 1 Then ; Yes or no result? Offset of 2.
+			$newPhone = StringRegExp($orderArray[17], $regexPHN10, 1, 2); Return an array of matches.
+			GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+			$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
+		ElseIf StringRegExp($orderArray[17], $regexPHN, 0) = 1 Then 
+			$newPhone = StringRegExp($orderArray[17], $regexPHN, 1); No offset. Return an array of matches.
+			GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+			$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
+		EndIf
+		; Else 
+		; MsgBox(64, "Invalid Phone# Format", "Phone number is an incorrect length. Double-check the number before proceeding.") ; Info box.
+	EndIf
+EndFunc ; phoneFormatter()
 
 Func inputMemo()
 	GUISetState(@SW_HIDE, $AppTitle) ;Hide the main window
