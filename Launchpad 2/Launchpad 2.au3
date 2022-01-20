@@ -231,6 +231,7 @@ Func btnAzAddress()
 	WinActivate($ChromeWindow)
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
+	; TODO: CONCATENATE THE ADDRESS INTO A SPECIAL VARIABLE.
 	ClipPut($AmazonSearch) ; Load first part of Amazon search url
 	Send("{CTRLDOWN}v{CTRLUP}") ; Paste search url into address bar
 	ClipPut($orderArray[3]) ; Load Amazon order number
