@@ -785,7 +785,8 @@ Func inputMemo()
 
 	    Else
 	        GUICtrlSetData($statusBar,"No match.")
-			hidePaymentButtons() ; Hide all payment buttons, but....
+			HotKeySet("^!p") ; Clear previous payment hotkey.
+	        hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Label_Memo, $GUI_ENABLE + $GUI_SHOW)
 	EndIf
