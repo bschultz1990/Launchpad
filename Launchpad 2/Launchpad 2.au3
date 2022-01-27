@@ -40,6 +40,7 @@ Global $regexCRD = "\b\d{11}"
 Global $regexPPL = "[A-Za-z0-9]{17}"
 Global $regexPHN = "\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}"
 Global $regexPHN10 = "\d{10}$"
+Global $regexCA = "[A-Za-z0-9]{3}\s?[A-Za-z0-9]{3}"
 
 
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
@@ -231,10 +232,7 @@ Func btnAzAddress()
 	WinActivate($ChromeWindow)
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	; TODO: CONCATENATE THE ADDRESS INTO A SPECIAL VARIABLE.
-	ClipPut($AmazonSearch) ; Load first part of Amazon search url
-	Send("{CTRLDOWN}v{CTRLUP}") ; Paste search url into address bar
-	ClipPut($orderArray[3]) ; Load Amazon order number
+	ClipPut($AmazonSearch & $orderArray[3])
 	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste Amazon order number and GO
 
 	btnAddress()
@@ -339,11 +337,7 @@ Func ctLookup()
 	WinActivate($ChromeWindow) 
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($cartSearch[0]) ; Load first part of Cart Search url
-	Send("{CTRLDOWN}v{CTRLUP}") ; Paste first part of Cart Search url
-	ClipPut($orderArray[2]) ; Load Cart Order Number
-	Send("{CTRLDOWN}v{CTRLUP}") ; Paste Cart order number
-	ClipPut($cartSearch[1]) ; Load last part of Cart search url
+	ClipPut($cartSearch[0] & $orderArray[2] & $cartSearch[1]) ; Concatenate and load the entire Cart URL
 	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste last part of Cart search url and GO.
 
 	If WinActivate ($ChromeWindow) = 0 Then
@@ -357,9 +351,7 @@ Func ebLook()
 	WinActivate($ChromeWindow) 
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
 	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($ebaySearch) ; Load eBay search url
-	Send("{CTRLDOWN}v{CTRLUP}") ; Paste eBay search url into address bar
-	ClipPut($orderArray[4]) ; Load eBay order number
+	ClipPut($ebaySearch & $orderArray[4]) ; Load eBay search url
 	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste eBay order number into address bar and GO
 
 	btnAddress() ; Look up address in Evosus.
