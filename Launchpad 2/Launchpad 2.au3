@@ -227,6 +227,18 @@ Func btnOrder()
 	importOrder()
 EndFunc ; $Btn_Order
 
+Func canadaCheck()
+	If StringRegExp($orderArray[16], $regexCA, 0) = 1 Then ;Yes or no result? No offset.
+		Global $CAZip = StringRegExp($orderArray[16], $regexCA, 1) ; Return an array of matches. No offset.
+		GuiCtrlSetData($statusBar, "Zipcode: "&$CAZip[0]); Show Canada zipcode to show the above works
+		ControlFocus("New Customer", "", 69) ; Focus the dropdown control
+		ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
+		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
+		ClipPut($orderArray[17]) ; Load phone number
+		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
+		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
+	EndIf
+EndFunc ; canadaCheck()
 
 Func btnAzAddress()
 	WinActivate($ChromeWindow)
@@ -266,14 +278,8 @@ Func btnAzCst()
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
 	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
 
-		If $orderArray[1] = "Amazon.ca" Then
-			ControlFocus("New Customer", "", 69) ; Focus the dropdown control
-			ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
-			ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-			ClipPut($orderArray[17]) ; Load phone number
-			ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
-			ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-		EndIf
+	canadaCheck()
+
 	ClipPut($orderArray[8]); Load First Name
 	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
 	ClipPut($orderArray[9]) ; Load Last Name
@@ -382,6 +388,8 @@ Func ebCst()
 		ClipPut($orderArray[12]); Load Address Line 2
 		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
 
+		canadaCheck()
+
 		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
 		ClipPut($orderArray[14]) ; Load City
 		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
@@ -439,6 +447,9 @@ Func ctCst()
 		ClipPut($orderArray[17]) ; Load phone number
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone field to make sure it stays.
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
+
+		canadaCheck()
+		
 			; TODO: Add a preferences screen.
 			; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
 			ClipPut($orderArray[14]) ; Load City
