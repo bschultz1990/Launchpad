@@ -60,10 +60,3 @@ EndFunc ; ==> IsOnTop
 Func _Exit ()
    Exit
 EndFunc ; ==> _Exit
-
-
-
-
-
-
-
