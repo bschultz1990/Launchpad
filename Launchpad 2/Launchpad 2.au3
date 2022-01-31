@@ -48,10 +48,10 @@ Global $ebaySearch = "https://www.ebay.com/sh/ord/details?srn=118139&orderid="
 Global $cartSearch[2] = ["https://pellethead.com/wp-admin/post.php?post=", "&action=edit"]
 Global $wmSearch = "https://seller.walmart.com/order-management/details"
 
-
+; https://coolors.co/9d66f4
 Global $Color_Amazon = 0xfaa71a
 Global $Color_Ebay = 0xf69699
-Global $Color_Cart = 0x9D66F4
+Global $Color_Cart = 0xA471F5
 Global $Color_WalMart = 0x74adff
 
 Global $Btn_Info = GUICtrlCreateButton("i", 12, 12, 24, 24)
@@ -182,7 +182,7 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-
+	
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -593,7 +593,7 @@ Func showWmButtons()
 	GUICtrlSetData($Btn_Order, "Import Order")
 	GUICtrlSetData($Btn_Memo, "$")
 
-	HotKeySet("^!a", "btnAddress") ; Enable lookup hotkey
+	HotKeySet("^!a", "wmAddress") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
 	HotKeySet("^!p", "wmPmt") ; Enable memo hotkey
 EndFunc ; showWmButtons()
