@@ -240,6 +240,11 @@ Func canadaCheck()
 	EndIf
 EndFunc ; canadaCheck()
 
+Func wmWebsite()
+	ClipPut($orderArray[2]) ; Load WalMart order number into clipboard
+	GUICtrlSetData($statusBar, "Copied WM Order number. Paste into Chrome.")
+EndFunc ; wmWebsite()
+
 Func btnAzAddress()
 	WinActivate($ChromeWindow)
 	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
@@ -498,15 +503,14 @@ Func wmAddress()
 	If WinActivate ($ChromeWindow) = 0 Then
 		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
 	EndIf
-
 	btnAddress()
-	ClipPut($orderArray[2]) ; Load WalMart order number into clipboard
-	GUICtrlSetData($statusBar, "Copied WM Order number. Paste into Chrome.")
+	wmWebsite()
 EndFunc ; wmAddress()
 
 Func wmCst()
 	GUICtrlSetData($statusBar, $orderArray[2]); Show WalMart order number in status bar.
 	ebCst()
+	wmWebsite()
 EndFunc ; wmCst()
 
 Func wmPmt()
