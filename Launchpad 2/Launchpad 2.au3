@@ -219,7 +219,9 @@ Func evosusDeposit() ; Secret Evosus Deposit Function! :)
 EndFunc ; evosusPayment()
 
 Func close()
-	Exit
+	If MsgBox(4+32, "Exit?", "Are you sure you want to exit?", 0, $MainWindow) = 6 Then ; Yes
+		Exit
+	EndIf
 EndFunc
 
 Func btnOrder()
@@ -717,6 +719,7 @@ Func importOrder()
 
 	ElseIf $orderArray[1] = "WalMart" Then
 		GUICtrlSetData($orderBar, "WalMart Order")
+		GUICtrlSetData($statusBar, $orderArray[2]&" - "&$orderArray[9])
 		phoneFormatter()
 
 		hidePaymentButtons()
@@ -738,11 +741,11 @@ Func phoneFormatter()
 	If UBound($orderArray) > 16 Then
 		If StringRegExp($orderArray[17], $regexPHN10, 0, 2) = 1 Then ; Yes or no result? Offset of 2.
 			$newPhone = StringRegExp($orderArray[17], $regexPHN10, 1, 2); Return an array of matches.
-			GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+			; GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
 			$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
 		ElseIf StringRegExp($orderArray[17], $regexPHN, 0) = 1 Then 
 			$newPhone = StringRegExp($orderArray[17], $regexPHN, 1); No offset. Return an array of matches.
-			GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
+			; GUICtrlSetData($statusBar, $newPhone[0]) ; Display number.
 			$orderArray[17] = $newPhone[0]; Update phone number with formatted one.
 		EndIf
 		; Else 
