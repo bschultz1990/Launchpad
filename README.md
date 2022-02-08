@@ -39,6 +39,8 @@ After this, your Shipping panel will also say it needs to validate your changes.
 
 ![address_validated](https://user-images.githubusercontent.com/19655298/153071542-216b0263-4528-4a85-a55f-3b70b538b436.PNG)
 
+> **Note:** Unfortunately, this is more involved than tweaking the address on the Shipping panel. Since it can be jarring to flip between address fixing and order entry, I suggest tweaking a handful of addresses first, then entering those orders afterwards.
+
 # Usage
 Launchpad stays on top of all other windows. Open it and move it wherever it's out of the way. When you're ready, hit the "Import Order" button.
 
@@ -54,7 +56,29 @@ Right-click on the text field in Launchpad's window and hit "Paste." Alternative
 
 Click "OK".
 
-From here, Launchpad will look different depending on what platform your order is from. From top to bottom is Pellethead.com, Amazon.com, Walmart.com, and eBay.com. We'll walk through each in turn:
+From here, Launchpad will look different depending on what platform your order is from. From top to bottom is Pellethead.com, Amazon.com, eBay.com, and Walmart.com. We'll walk through each in turn:
 
-![platforms](https://user-images.githubusercontent.com/19655298/153073029-666c2952-9aec-4113-8929-387144f839d3.PNG)
+![order_all](https://user-images.githubusercontent.com/19655298/153092069-572f8898-91a4-40b2-b35b-bcf0f5ac3499.jpg)
 
+## Pellethead.com
+![order_pellethead](https://user-images.githubusercontent.com/19655298/153092503-3c6541ce-3592-438f-a829-56fc2321ff17.png)
+
+- **Lookup Cst.:** Launches order page in Chrome. Looks up customer address in Evosus.
+- **Enter Cst.** If the customer doesn't exist in Evosus, enters their information in a "New Customer" window automatically.
+- **$** Copy and paste whatever payment memo the customer used. Launchpad will dynamically create a payment button for you afterwards.
+- **Payment (AZ, Card, PayPal)** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
+
+### Lookup Cst
+Make sure you have Chrome open. It'll yell at you if you don't. Launchpad will open a new browser tab then flip back to Evosus to look up the customer by address.
+
+### Enter Cst.
+On this screen, make sure all the appropriate fields get filled. Launchpad will also select an appropriate customer interest, contact type, and gender for you in the background.
+
+### $
+Copy and paste the payment memo the customer used. Launchpad will create an appropriate payment button based off your input. You don't have to get it exactly. Launchpad will cut out extraneous words or spaces for you. *Important:* If they paid via Amazon Payments, make sure you use the memo from the note that says, "Status: Closed."
+
+### Payment (AZ, Card, PayPal)
+
+> **Only use this when the Payment screen is visible, as pictured above.**
+
+Fills in the above fields and waits for 10 seconds. Make sure all the fields are filled in correctly. Within 10 seconds, hit "Submit Payment" or just hit `Enter`. Launchpad will speed through to the "Invoice Items" screen where you can select what you want to invoice and the stock site you want to invoice from.
