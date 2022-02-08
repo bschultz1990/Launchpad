@@ -26,18 +26,18 @@ Make sure you have the following headers **in this exact order:**
 
 You may add other column headers afterwards, but the first 21 must look _exactly_ like the picture above. Otherwise, Launchpad will be very confused.
 
-# Tweaking Addresses
+## Tweaking Addresses
 Before importing an order from ShipWorks, make sure its address is correctly formatted. In order to make lasting changes that Launchpad will also understand, DO NOT change anything on the Shipping panel to the right as you may be used to:
 
 ![address_bar](https://user-images.githubusercontent.com/19655298/153064409-9ccc7802-b488-487d-b69e-a253382b2127.PNG)
 
 Instead, double-click on the order, hit "Address" and then "Edit." Make your changes here. Be sure to validate the address and take any suggestions before hitting "OK" and saving your progress:
 
-![address_change](https://user-images.githubusercontent.com/19655298/153067215-0f3a56cf-68eb-44be-87de-5bfe5efd372c.PNG)
+![address_edit](https://user-images.githubusercontent.com/19655298/153071346-a28a6f0d-c0d3-4467-a116-566fa5265055.PNG)
 
 After this, your Shipping panel will also say it needs to validate your changes. It does not. If you've modified the address by double-clicking, you can safely ignore this message.
 
-![address_validated](https://user-images.githubusercontent.com/19655298/153068316-cfd88bad-b26c-4f7c-9d6a-18db63386f3e.PNG)
+![address_validated](https://user-images.githubusercontent.com/19655298/153071542-216b0263-4528-4a85-a55f-3b70b538b436.PNG)
 
 # Usage
 Launchpad stays on top of all other windows. Open it and move it wherever it's out of the way. When you're ready, hit the "Import Order" button.
@@ -54,5 +54,7 @@ Right-click on the text field in Launchpad's window and hit "Paste." Alternative
 
 Click "OK".
 
-From here, Launchpad will look different depending on what platform your order is from. From left to right is Pellethead.com, Amazon.com, Walmart.com, and eBay.com:
+From here, Launchpad will look different depending on what platform your order is from. From top to bottom is Pellethead.com, Amazon.com, Walmart.com, and eBay.com. We'll walk through each in turn:
+
+![platforms](https://user-images.githubusercontent.com/19655298/153073029-666c2952-9aec-4113-8929-387144f839d3.PNG)
 
