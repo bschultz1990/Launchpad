@@ -61,6 +61,8 @@ From here, Launchpad will look different depending on what platform your order i
 ![order_all](https://user-images.githubusercontent.com/19655298/153092069-572f8898-91a4-40b2-b35b-bcf0f5ac3499.jpg)
 
 ## Pellethead.com
+Here is an overview of what these buttons do. Details are below that.
+
 ![order_pellethead](https://user-images.githubusercontent.com/19655298/153092503-3c6541ce-3592-438f-a829-56fc2321ff17.png)
 
 - **Lookup Cst.:** Launches order page in Chrome. Looks up customer address in Evosus.
@@ -72,7 +74,10 @@ From here, Launchpad will look different depending on what platform your order i
 Make sure you have Chrome open. It'll yell at you if you don't. Launchpad will open a new browser tab then flip back to Evosus to look up the customer by address.
 
 ### Enter Cst.
-On this screen, make sure all the appropriate fields get filled. Launchpad will also select an appropriate customer interest, contact type, and gender for you in the background.
+
+![customer_address](https://user-images.githubusercontent.com/19655298/153304667-24491275-2309-4540-9165-098dfa0f2953.png)
+
+On this screen, make sure all the appropriate fields get filled. Launchpad will also select an appropriate customer interest, contact type, and gender for you in the background, so all you have to do is press enter to speed through the Interest and Attributes tabs.
 
 ### $
 Copy and paste the payment memo the customer used. Launchpad will create an appropriate payment button based off your input. You don't have to get it exactly. Launchpad will cut out extraneous words or spaces for you. *Important:* If they paid via Amazon Payments, make sure you use the memo from the note that says, "Status: Closed."
