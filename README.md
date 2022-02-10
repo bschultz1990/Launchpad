@@ -5,7 +5,7 @@ This was made special for the hard-working online team at Earth Sense Energy Sys
 # Disclaimer
 This software comes with no warranty. If you hit the wrong button, you will make Evosus spaz out. At best, I've had to close some random dialog boxes.  At worst, I've had a payment entered prematurely. This software is optional. If you intend to use it, please be aware of the risks.
 
-This software copies and pastes sensitive data such as names, email addresses, and phone numbers. However, it does not store this data. After you close Launchpad, it forgets the order data entirely. [Here is my code]() so you can verify.
+This software copies and pastes sensitive data such as names, email addresses, and phone numbers. However, it does not store this data. After you close Launchpad, it forgets the order data entirely. [Here is my code]() so you can verify. Any pictures in this guide or code in this repository have obsured or faked names, addresses, phone numbers, order numbers, and payment method numbers in order to protect privacy.
 
 # Installation
 Grab the release from the [Releases page](). Unzip wherever you'd like to put it and run.
@@ -65,7 +65,7 @@ Here is an overview of what these buttons do. Details are below that.
 
 ![order_pellethead](https://user-images.githubusercontent.com/19655298/153092503-3c6541ce-3592-438f-a829-56fc2321ff17.png)
 
-- **Lookup Cst.:** Launches order page in Chrome. Looks up customer address in Evosus.
+- **Lookup Cst.** Launches order page in Chrome. Looks up customer address in Evosus.
 - **Enter Cst.** If the customer doesn't exist in Evosus, enters their information in a "New Customer" window automatically.
 - **$** Copy and paste whatever payment memo the customer used. Launchpad will dynamically create a payment button for you afterwards.
 - **Payment (AZ, Card, PayPal)** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
@@ -80,10 +80,64 @@ Make sure you have Chrome open. It'll yell at you if you don't. Launchpad will o
 On this screen, make sure all the appropriate fields get filled. Launchpad will also select an appropriate customer interest, contact type, and gender for you in the background, so all you have to do is press enter to speed through the Interest and Attributes tabs.
 
 ### $
+
+![payment_memo](https://user-images.githubusercontent.com/19655298/153452090-42ee12ee-78f3-4f20-a555-e28560da2069.PNG)
+
 Copy and paste the payment memo the customer used. Launchpad will create an appropriate payment button based off your input. You don't have to get it exactly. Launchpad will cut out extraneous words or spaces for you. *Important:* If they paid via Amazon Payments, make sure you use the memo from the note that says, "Status: Closed."
 
 ### Payment (AZ, Card, PayPal)
 
-> **Only use this when the Payment screen is visible, as pictured above.**
+![payment_screen](https://user-images.githubusercontent.com/19655298/153457394-229a5b92-705c-4a2e-b273-0166579cfc75.PNG)
+
+> **IMPORTANT: Only use this when the Payment screen is visible, as pictured above.**
 
 Fills in the above fields and waits for 10 seconds. Make sure all the fields are filled in correctly. Within 10 seconds, hit "Submit Payment" or just hit `Enter`. Launchpad will speed through to the "Invoice Items" screen where you can select what you want to invoice and the stock site you want to invoice from.
+
+The other platforms behave much the same, but I will mark the differences as we go.
+
+
+## Amazon.com
+
+![order_amazon](https://user-images.githubusercontent.com/19655298/153465707-84844d4f-7a8d-4ede-9341-a92a0ac9b56d.png)
+
+- **Chk Address** Launches order page in Chrome. Looks up customer address in Evosus.
+- **Enter Cst.** If the customer doesn't exist in Evosus, enters their information in a "New Customer" window automatically.
+- **No Memo Button** There is no payment memo input button since your memo for Amazon orders is the Amazon order number itself. This is taken care of automatically.
+- **AZ Payment** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
+
+
+## eBay.com
+
+![order_ebay](https://user-images.githubusercontent.com/19655298/153465783-caa1e766-06f3-4ac8-9e0a-6b18ceced1b4.png)
+
+- **Lookup Cst.** Launches order page in Chrome. Looks up customer address in Evosus.
+- **Enter Cst.** If the customer doesn't exist in Evosus, enters their information in a "New Customer" window automatically.
+- **No Memo Button** There is no payment memo input button since your memo for eBay orders is the eBay order number itself. This is taken care of automatically.
+- **Payment (AZ, Card, PayPal)** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
+
+
+## WalMart.com
+
+![order_walmart](https://user-images.githubusercontent.com/19655298/153465955-89c68bda-6a6e-4937-ad9c-af91a1282776.png)
+
+- **Lookup Cst.** Launches WalMart Seller Central page in Chrome. Paste the auto-copied order number into this page to find your order. Looks up customer address in Evosus.
+- **Enter Cst.** If the customer doesn't exist in Evosus, enters their information in a "New Customer" window automatically.
+- **No Memo Button** There is no payment memo input button since your memo for WalMart orders is the WalMart order number itself. This is taken care of automatically.
+- **WM Payment** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
+
+### Lookup Cst.
+Launches WalMart Seller Central page in Chrome. Make sure Google Chrome is open. It will yell at you if you don't. Log in if you need to.
+
+![order_walmart_pasteorder](https://user-images.githubusercontent.com/19655298/153467253-57d322e3-493c-49f0-9ed8-f85f9d59cb44.PNG)
+
+Heed this command. Launchpad has copied the WalMart order number for you.
+
+![order_walmart_sellercentral](https://user-images.githubusercontent.com/19655298/153467342-5c0676f7-3e22-4cd9-9f4f-4e0e1f78aedd.PNG)
+Paste your order number here and proceed as normal.
+
+
+# Hotkeys
+If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like:
+
+- **i** `CTRL+ALT+i`
+- **Import Order** `CTRL+ALT+o`
