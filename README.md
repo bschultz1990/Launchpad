@@ -42,4 +42,4 @@ After this, your Shipping panel will also say it needs to validate your changes.
 > **Note:** Unfortunately, this is more involved than tweaking the address on the Shipping panel. Since it can be jarring to flip between address fixing and order entry, I suggest tweaking a handful of addresses first, then entering those orders afterwards.
 
 # Useage
-For further useage instructions, please see [USEAGE.md](USEAGE.md)
+For further useage instructions, please see [USAGE.md](USEAGE.md)
