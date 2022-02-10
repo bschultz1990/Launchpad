@@ -1,8 +1,10 @@
-# Launchpad Usage
+# Launchpad Manual
 
-After you've followed the setup instructions at [the README file](README.md), launch the program and follow along:
+# Contents
+
 
 # Setup
+
 Open up ShipWorks. Right-click on your column headers.
 
 ![header](https://user-images.githubusercontent.com/19655298/153038265-2889c3d1-15ef-445f-8c1d-5b9ce18be3e5.PNG)
