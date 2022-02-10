@@ -1,4 +1,6 @@
-# Usage
+# Launchpad Usage
+
+After you've followed the setup instructions at [the README file](README.md), launch the program and follow along:
 
 The "i" button does nothing at the moment. When you've loaded an order, it will show you the data you've imported as a list.
 
