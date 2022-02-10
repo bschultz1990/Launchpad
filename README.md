@@ -42,6 +42,9 @@ After this, your Shipping panel will also say it needs to validate your changes.
 > **Note:** Unfortunately, this is more involved than tweaking the address on the Shipping panel. Since it can be jarring to flip between address fixing and order entry, I suggest tweaking a handful of addresses first, then entering those orders afterwards.
 
 # Usage
+
+The "i" button does nothing at the moment. When you've loaded an order, it will show you the data you've imported as a list.
+
 Launchpad stays on top of all other windows. Open it and move it wherever it's out of the way. When you're ready, hit the "Import Order" button.
 
 ![launchpad](https://user-images.githubusercontent.com/19655298/153051081-228d4c71-55d0-428d-8168-2dd71ec584c9.PNG)
