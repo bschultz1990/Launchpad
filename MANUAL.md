@@ -1,7 +1,13 @@
 # Launchpad Manual
 
 # Contents
-
+- [Setup](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#setup)
+  - [Tweaking Addresses](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#tweaking-addresses)
+- [Pellethead.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#pelletheadcom)
+- [Amazon.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#amazoncom)
+- [eBay.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#ebaycom)
+- [WalMart.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#walmartcom)
+- [Hotkeys](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#hotkeys)
 
 # Setup
 
