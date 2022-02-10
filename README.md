@@ -15,5 +15,5 @@ Prerequisites
 - ShipWorks
 - Evosus
 
-# Useage
-For further useage instructions, please see the [Launchpad Manual](MANUAL.md)
+# Usage
+For further usage instructions, please see the [Launchpad Manual](MANUAL.md)
