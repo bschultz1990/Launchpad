@@ -137,7 +137,11 @@ Paste your order number here and proceed as normal.
 
 
 # Hotkeys
-If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like:
+If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like to use them in battle:
 
 - **i** `CTRL+ALT+i`
 - **Import Order** `CTRL+ALT+o`
+- **Lookup Cst. or Chk. Address** `CTRL+ALT+a`
+- **Enter Cst.** `CTRL+ALT+c`
+- **$** `CTRL+ALT+4`
+- **Payment (AZ, Card, PayPal), Az Payment, eBay Payment, or WM Payment** `CTRL+ALT+p`
