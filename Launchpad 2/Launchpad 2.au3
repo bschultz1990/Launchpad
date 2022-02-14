@@ -232,7 +232,6 @@ EndFunc ; $Btn_Order
 Func canadaCheck()
 	If StringRegExp($orderArray[16], $regexCA, 0) = 1 Then ;Yes or no result? No offset.
 		Global $CAZip = StringRegExp($orderArray[16], $regexCA, 1) ; Return an array of matches. No offset.
-		GuiCtrlSetData($statusBar, "Zipcode: "&$CAZip[0]); Show Canada zipcode to show the above works
 		ControlFocus("New Customer", "", 69) ; Focus the dropdown control
 		ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
