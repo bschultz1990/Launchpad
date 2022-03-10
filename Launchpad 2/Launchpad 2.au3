@@ -479,13 +479,14 @@ Func ctPmt()
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
 	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	If (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
-			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
 
-		ElseIf (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
+	If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
 			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
 			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - PayPal") ; Select Paypal
+
+		ElseIf (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
+			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
 
 		ElseIf (StringRegExp($pmtMemo[0], $regexAMZ, 0)) = 1  Then ; Check Amazon memo
 			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
