@@ -17,3 +17,7 @@ Prerequisites
 
 # Usage
 For further usage instructions, please see the [Launchpad Manual](MANUAL.md)
+
+# Known Issues
+- Launchpad will sometimes paste a "v" in places where it should have pasted something else.
+- Launchpad will sometimes paste the same thing into multiple fields.
