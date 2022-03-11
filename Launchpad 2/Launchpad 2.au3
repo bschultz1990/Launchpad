@@ -196,12 +196,11 @@ EndFunc ; newCstWinCheck()
 Func printLabel()
 	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
 	WinWaitActive($ShipworksWindow, "")
-	; ControlClick($ShipworksWindow, "", "[CLASS:HwndWrapper[ShipWorks.exe;d7ea55d4-5775-46bf-be60-e51ba68230ef]; INSTANCE:1]", "left", 2, 135, 739)
-	; ControlSend($ShipworksWindow, "", "[CLASS:HwndWrapper[ShipWorks.exe;d7ea55d4-5775-46bf-be60-e51ba68230ef]; INSTANCE:1]", "{F10}")
 	Send("{F10}")
 EndFunc ; printLabel()
 
 Func itemFocus()
+	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:18]"); Focus Item field
 EndFunc ; funcName()
