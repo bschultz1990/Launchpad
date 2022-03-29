@@ -8,24 +8,27 @@
 #include <AutoItConstants.au3>
 #include <ButtonConstants.au3>
 #include <ColorConstantS.au3>
+#include <Date.au3>
 #include <GUIConstants.au3>
 #include <GUIConstantsEx.au3>
 #include <Misc.au3>
 #include <MsgBoxConstants.au3>
 #include <WindowsConstants.au3>
 
-; CUSTOM SCRIPTS
-#include <scripts\Launcher.au3>
-;~ #include <scripts\Methods2.au3>
+;~ ; CUSTOM SCRIPTS
+#include <scripts\PopUpMenu.au3>
+
 
 AutoItSetOption("GUIOnEventMode", 1); Turn onEventMode On.
+_PopUpMenuSetOption ("OnEventMode", 1)
 Opt("WinTitleMatchMode", 2); Match any substring in the window title.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
 Global $AppWidth = 400
 Global $AppHeight = 68
-Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
+;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
+Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight)
 
 ; GLOBAL VARIABLES
 Global $input
@@ -42,7 +45,28 @@ Global $regexPHN = "\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}"
 Global $regexPHN10 = "\d{10}$"
 Global $regexCA = "[A-Za-z0-9]{3}\s?[A-Za-z0-9]{3}"
 
+; POPUP MENU VARIABLES
+Global $hMenu = _PopUpMenuCreate ("^`")
+Global $Oos = _PopUpMenuCreateMenuItem ("Out of Stock", $hMenu)
+Global $Fraud = _PopUpMenuCreateMenuItem ("Fraud?", $hMenu)
+Global $Backordered = _PopUpMenuCreateMenuItem ("Backordered", $hMenu)
+Global $BadAddress = _PopUpMenuCreateMenuItem ("Bad Address", $hMenu)
+Global $BadAddressContacted = _PopUpMenuCreateMenuItem ("Bad Address, Contacted", $hMenu)
+Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $hMenu)
+Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $hMenu)
+Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
 
+Global $OosText = "Item out of stock. Order and payment entered."
+Global $FraudText = "Potential fraud. Order and payment entered."
+Global $BoText = "Item backordered. Order and payment entered."
+Global $BadAddressText = "Hello! We're processing your Pellethead order and your shipping address () is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"
+Global $BadAddressContactedText = "Contacted customer about bad address. Order and payment entered."
+Global $EmailTrackingText = "Hello! Thanks for reaching out! Your tracking number is below and order attached. I just created the label, so it might take up to 1 business day to show movement."
+Global $EmailShippingChangeText = "Hello! I'm contacting you in regard to your recent Pellethead.com order. The shipping service you requested (First Class Mail International) was not available for your package.  USPS was giving an estimate as far out as 999 days. However, we managed to upgrade you to FedEx International Ground at no extra cost. Your tracking number is below. It may take a day to show movement, as the label just got created. Thank you in advance for understanding and hope you have a great rest of day."
+
+Global $InitialsCounter = 0
+
+; SEARCH VARIABLES AND COLORS
 Global $AmazonSearch = "https://sellercentral.amazon.com/orders-v3/order/"
 Global $ebaySearch = "https://www.ebay.com/sh/ord/details?srn=118139&orderid="
 Global $cartSearch[2] = ["https://pellethead.com/wp-admin/post.php?post=", "&action=edit"]
@@ -132,6 +156,7 @@ GUISetState(@SW_SHOW) ; Show the main GUI.
 WinActivate($MainWindow)
 WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 
+
 ; END GUI SECTION
 
 ; ----------------------------------------------------------------------
@@ -173,6 +198,16 @@ While 1
 	GUICtrlSetOnEvent($Btn_WmAddress, "wmAddress") ; WAL-MART
 	GUICtrlSetOnEvent($Btn_WmCst, "wmCst")
 	GUICtrlSetOnEvent($Btn_WmPmt, "wmPmt")
+
+	; POPUP MENU EVENTS SECTION
+	_PopUpMenuItemSetOnEvent ($Oos, "Oos", "")
+	_PopUpMenuItemSetOnEvent ($Fraud, "Fraud", "")
+	_PopUpMenuItemSetOnEvent ($Backordered, "Backordered", "")
+	_PopUpMenuItemSetOnEvent ($BadAddress, "BadAddress", "")
+	_PopUpMenuItemSetOnEvent ($BadAddressContacted, "BadAddressContacted", "")
+	_PopUpMenuItemSetOnEvent ($EmailTracking, "EmailTracking", "")
+	_PopUpMenuItemSetOnEvent ($EmailShippingChange, "EmailShippingChange", "")
+	_PopUpMenuItemSetOnEvent ($ExitButton, "ChangeInitials", "")
 WEnd
 ; END EVENTS SECTION
 
@@ -200,7 +235,7 @@ Func printLabel()
 EndFunc ; printLabel()
 
 Func itemFocus()
-	WinActivate($EvosusWindow, "")
+	;~ WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:18]"); Focus Item field
 EndFunc ; funcName()
@@ -806,4 +841,72 @@ Func orderInfo()
 		importOrder() ; Display Order Info box
 	EndIf
 EndFunc
+
+
+; POPUP MENU FUNCTIONS:
+Func Oos()
+    InitialsCheck()
+    ClipPut($OosText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func Fraud()
+    InitialsCheck()
+    ClipPut($FraudText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func Backordered()
+    InitialsCheck()
+    ClipPut($BoText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func BadAddress()
+    InitialsCheck()
+    ClipPut($BadAddressText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func BadAddressContacted()
+    InitialsCheck()
+    ClipPut($BadAddressContactedText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func EmailTracking()
+    InitialsCheck()
+    ClipPut($EmailTrackingText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+Endfunc
+
+Func EmailShippingChange()
+    InitialsCheck()
+    ClipPut($EmailshippingChangeText & $SigDate)
+    _ToolTip("Text copied!", 1500)
+EndFunc
+
+Func InitialsCheck()
+    If $InitialsCounter = 0 Then
+    Global $Initials = InputBox("Initials", "Enter your initials", "", "", 200, 128)
+    $InitialsCounter = 1
+EndIf
+    Global $SigDate = " ~" & $Initials &" " & _NowDate()
+    Return $Initials
+EndFunc
+
+Func _ToolTip($msg = "", $timeout = 1000, $xpos = MouseGetPos(0), $ypos = MouseGetPos(1))
+    ToolTip($msg)
+    AdlibRegister(_ToolTipStop, $timeout)
+EndFunc
+Func _ToolTipStop()
+    ToolTip("")
+    AdlibUnRegister(_ToolTipStop)
+EndFunc
+
+Func ChangeInitials()
+    $InitialsCounter = 0
+    InitialsCheck()
+EndFunc ; ==> ChangeInitials
+
 ; END OF METHODS SECTION
