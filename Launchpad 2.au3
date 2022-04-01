@@ -56,9 +56,9 @@ Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $hMenu)
 Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $hMenu)
 Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
 
-Global $OosText = "Item out of stock. Order and payment entered unless this is an Amazon order."
-Global $FraudText = "Potential fraud. Order and payment entered unless this is an Amazon order."
-Global $BoText = "Item backordered. Order and payment entered unless this is an Amazon order."
+Global $OosText = "Item out of stock. Order and payment entered."
+Global $FraudText = "Potential fraud. Order and payment entered."
+Global $BoText = "Item backordered. Order and payment entered."
 Global $BadAddressText[2] = ["Hello! We're processing your Pellethead order and your shipping address (", ") is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"]
 Global $BadAddressContactedText = "Contacted customer about bad address. Order and payment entered."
 Global $EmailTrackingText = "Hello! Thanks for reaching out! Your tracking number is below and order attached. I just created the label, so it might take up to 1 business day to show movement."
