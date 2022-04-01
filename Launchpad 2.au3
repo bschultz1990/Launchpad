@@ -50,16 +50,16 @@ Global $hMenu = _PopUpMenuCreate ("^`")
 Global $Oos = _PopUpMenuCreateMenuItem ("Out of Stock", $hMenu)
 Global $Fraud = _PopUpMenuCreateMenuItem ("Fraud?", $hMenu)
 Global $Backordered = _PopUpMenuCreateMenuItem ("Backordered", $hMenu)
-Global $BadAddress = _PopUpMenuCreateMenuItem ("Bad Address", $hMenu)
 Global $BadAddressContacted = _PopUpMenuCreateMenuItem ("Bad Address, Contacted", $hMenu)
+Global $BadAddress = _PopUpMenuCreateMenuItem ("Email, Bad Address", $hMenu)
 Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $hMenu)
 Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $hMenu)
 Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
 
-Global $OosText = "Item out of stock. Order and payment entered."
-Global $FraudText = "Potential fraud. Order and payment entered."
-Global $BoText = "Item backordered. Order and payment entered."
-Global $BadAddressText = "Hello! We're processing your Pellethead order and your shipping address () is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"
+Global $OosText = "Item out of stock. Order and payment entered unless this is an Amazon order."
+Global $FraudText = "Potential fraud. Order and payment entered unless this is an Amazon order."
+Global $BoText = "Item backordered. Order and payment entered unless this is an Amazon order."
+Global $BadAddressText[2] = ["Hello! We're processing your Pellethead order and your shipping address (", ") is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"]
 Global $BadAddressContactedText = "Contacted customer about bad address. Order and payment entered."
 Global $EmailTrackingText = "Hello! Thanks for reaching out! Your tracking number is below and order attached. I just created the label, so it might take up to 1 business day to show movement."
 Global $EmailShippingChangeText = "Hello! I'm contacting you in regard to your recent Pellethead.com order. The shipping service you requested (First Class Mail International) was not available for your package.  USPS was giving an estimate as far out as 999 days. However, we managed to upgrade you to FedEx International Ground at no extra cost. Your tracking number is below. It may take a day to show movement, as the label just got created. Thank you in advance for understanding and hope you have a great rest of day."
@@ -203,8 +203,8 @@ While 1
 	_PopUpMenuItemSetOnEvent ($Oos, "Oos", "")
 	_PopUpMenuItemSetOnEvent ($Fraud, "Fraud", "")
 	_PopUpMenuItemSetOnEvent ($Backordered, "Backordered", "")
-	_PopUpMenuItemSetOnEvent ($BadAddress, "BadAddress", "")
 	_PopUpMenuItemSetOnEvent ($BadAddressContacted, "BadAddressContacted", "")
+	_PopUpMenuItemSetOnEvent ($BadAddress, "BadAddress", "")
 	_PopUpMenuItemSetOnEvent ($EmailTracking, "EmailTracking", "")
 	_PopUpMenuItemSetOnEvent ($EmailShippingChange, "EmailShippingChange", "")
 	_PopUpMenuItemSetOnEvent ($ExitButton, "ChangeInitials", "")
@@ -864,7 +864,7 @@ EndFunc
 
 Func BadAddress()
     InitialsCheck()
-    ClipPut($BadAddressText & $SigDate)
+    ClipPut($BadAddressText[0] & $orderArray[11] & $BadAddressText[1] & $SigDate)
     _ToolTip("Text copied!", 1500)
 EndFunc
 
