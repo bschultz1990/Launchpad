@@ -19,5 +19,7 @@ Prerequisites
 For further usage instructions, please see the [Launchpad Manual](MANUAL.md)
 
 # Known Issues
+These are things that are quirks of the AutoIt programming language and/or are unable to be worked around at this time.
 - Launchpad will sometimes paste a "v" in places where it should have pasted something else.
 - Launchpad will sometimes paste the same thing into multiple fields.
+- Launchpad will  force focus on the windows it's working on. This means you can not reliably work in a different window while it's dealing with a different one.
