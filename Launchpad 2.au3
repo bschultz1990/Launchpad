@@ -217,7 +217,7 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-	
+
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -562,6 +562,17 @@ Func wmPmt()
 	bypassAndInvoice()
 EndFunc ; wmPmt()
 
+Func SetTextMenuLabels ()
+    GUICtrlSetData($Oos, "Oos")
+    GUICtrlSetData($Fraud, "Fraud")
+    GUICtrlSetData($Backordered, "Backordered")
+    GUICtrlSetData($BadAddressContacted, "BadAddressContacted")
+    GUICtrlSetData($BadAddress, "BadAddress")
+    GUICtrlSetData($EmailTracking, "EmailTracking")
+    GUICtrlSetData($EmailShippingChange, "EmailShippingChange")
+    GUICtrlSetData($ExitButton, "ChangeInitials")
+EndFunc
+
 Func showAmazonButtons()
 
 	GUICtrlSetState($Btn_AzAddress, $GUI_ENABLE + $GUI_SHOW) ; Enable and show Amazon buttons.
@@ -574,6 +585,9 @@ Func showAmazonButtons()
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
 	GUICtrlSetData($Btn_Memo, "$")
+
+	; Re-set quick text labels. Keep them from disappearing.
+	SetTextMenuLabels ()
 
 	HotKeySet("^!a", "btnAddress") ; Set hotkeys for Amazon buttons.
 	HotKeySet("^!c", "btnAzCst")
@@ -591,6 +605,9 @@ Func showEbayButtons()
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
 	GUICtrlSetData($Btn_Memo, "$")
+
+	; Re-set quick text labels. Keep them from disappearing.
+	SetTextMenuLabels ()
 
 	HotKeySet("^!a", "ebLook") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
@@ -615,6 +632,9 @@ Func showCartButtons()
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
 	GUICtrlSetData($Btn_Memo, "$")
+
+	; Re-set quick text labels. Keep them from disappearing.
+	SetTextMenuLabels ()
 	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
 	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
@@ -632,6 +652,9 @@ Func showWmButtons()
 	GUICtrlSetData($Btn_Info, "i")
 	GUICtrlSetData($Btn_Order, "Import Order")
 	GUICtrlSetData($Btn_Memo, "$")
+	
+	; Re-set quick text labels. Keep them from disappearing.
+	SetTextMenuLabels ()
 
 	HotKeySet("^!a", "wmAddress") ; Enable lookup hotkey
 	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
