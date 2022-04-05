@@ -745,6 +745,7 @@ Func importOrder()
 			ElseIf $orderArray[1] = "Amazon" Then
 				GUICtrlSetData($orderBar, "Amazon US") ; USA!
 		EndIf
+
 		hidePaymentButtons()
 		showAmazonButtons()
 		hideEbayButtons()
@@ -755,7 +756,6 @@ Func importOrder()
 	ElseIf $orderArray[1] = "Earth Sense" Then
 		GUICtrlSetData($orderBar, "Cart Order")
 		GUICtrlSetData($statusBar, $orderArray[2]&" - "&$orderArray[9]) ; Show cart order number in status bar.
-		phoneFormatter()
 
 		hidePaymentButtons()
 		hideAmazonButtons()
@@ -766,7 +766,6 @@ Func importOrder()
 	ElseIf $orderArray[1] = "esesstoves" Then
 		GUICtrlSetData($orderBar, "eBay Order")
 		GUICtrlSetData($statusBar, $orderArray[4]&" - "&$orderArray[9])
-		phoneFormatter()
 
 		hidePaymentButtons()
 		hideAmazonButtons()
@@ -777,7 +776,6 @@ Func importOrder()
 	ElseIf $orderArray[1] = "WalMart" Then
 		GUICtrlSetData($orderBar, "WalMart Order")
 		GUICtrlSetData($statusBar, $orderArray[2]&" - "&$orderArray[9])
-		phoneFormatter()
 
 		hidePaymentButtons()
 		hideAmazonButtons()
@@ -792,6 +790,7 @@ Func importOrder()
 		hideCartButtons()
 		hideWmButtons()
 	EndIf
+phoneFormatter()
 EndFunc ; importOrder()
 
 Func phoneFormatter()
