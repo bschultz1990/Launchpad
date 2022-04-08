@@ -161,7 +161,7 @@ If you mouse hover over a button, you will notice a tooltip with a hotkey. Here 
 -   **$** `CTRL+ALT+4`
 -   **Payment (AZ, Card, PayPal), Az Payment, eBay Payment, or WM Payment** `CTRL+ALT+p`
 -   **Print Label** `CTRL+ALT+NUMPLUS`
--   **Quick Text Menu** `CTRL+ALT+`\` (Squiggle next to the 1)
+-   **Quick Text Menu** `CTRL+`\` (Squiggle next to the 1)
 
 ## Advanced Hotkeys
 
