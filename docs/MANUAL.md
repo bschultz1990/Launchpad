@@ -137,6 +137,10 @@ Heed this command. Launchpad has copied the WalMart order number for you.
 ![order_walmart_sellercentral](https://user-images.githubusercontent.com/19655298/153467342-5c0676f7-3e22-4cd9-9f4f-4e0e1f78aedd.PNG)
 Paste your order number here and proceed as normal.
 
+# Quick Text Menu
+
+Launchpad has a quick text menu you can use to insert snippets into any program. Trigger it by hitting `CTRL+ALT+`\` (Squiggle next to the 1).
+
 # Hotkeys
 
 If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like to use them in battle:
@@ -147,3 +151,15 @@ If you mouse hover over a button, you will notice a tooltip with a hotkey. Here 
 -   **Enter Cst.** `CTRL+ALT+c`
 -   **$** `CTRL+ALT+4`
 -   **Payment (AZ, Card, PayPal), Az Payment, eBay Payment, or WM Payment** `CTRL+ALT+p`
+-   **Print Label** `CTRL+ALT+NUMPLUS
+-   **Quick Text Menu** `CTRL+ALT+`\` (Squiggle next to the 1)
+
+## Advanced Hotkeys
+
+> **CAUTION** Use these only when your order screen is up and active.
+
+| Name                  | Hotkey       | Description                                                          |
+| --------------------- | ------------ | -------------------------------------------------------------------- |
+| **Item Focus**        | `CTRL+ALT+L` | Brings your cursor to the item input field on an order.              |
+| **Show Stock Status** | `CTRL+ALT+S` | Looks up the current stock of the order items.                       |
+| **Make Deposit**      | `CTRL+ALT+D` | Bring up the Deposit screen. Works anywhere inside the order window. |
