@@ -8,6 +8,7 @@
 -   [Amazon.com](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#amazoncom)
 -   [eBay.com](https://github.com/bschultz1990/Launchpad/edit/main/docs/MANUAL.md#ebaycom)
 -   [WalMart.com](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#walmartcom)
+-   [Quick Text Menu](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#quick-text-menu)
 -   [Hotkeys](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#hotkeys)
 
 # Setup
