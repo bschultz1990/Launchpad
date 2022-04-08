@@ -360,23 +360,37 @@ EndFunc ; azPmt()
 
 
 Func bypassAndInvoice()
-	WinWaitActive("Process Credit Card", "", 10)
-	ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
-	ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
-	WinWaitActive("Confirm Bypass", "", 2) ; click "Yes"
-	ControlClick("Confirm Bypass", "", "[ID:6]")
-	WinWaitActive("Payment", "", 2) ; Wait for "Successfully saved payment"
-	ControlClick("Payment", "", "[ID:2]") ; Click "OK"
-	WinWaitActive("Deliver Items?", "", 2)
-	ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
-
-	; INVOICE ORDER
-	WinActivate($EvosusWindow, 10)
-	ControlClick($EvosusWindow, "", "[ID:233]") ; Options
-	Sleep(120)
-	Send("{DOWN}{DOWN}{DOWN}")
-	Sleep(120)
-	Send("{ENTER}")
+	; WinWaitActive("Process Credit Card", "", 10)
+	; Create a new yes/no msg box on top of everything else
+	Local $PaymentDetails = MsgBox(4+262144, "Info OK?", "Payment Details look good?", 0, $AppTitle)
+	; If msg box respons = $IDYES
+		; Continue the process.
+	
+	If ($PaymentDetails = $IDYES) Then
+		WinActivate ($EvosusWindow) ; Activate Evosus window
+		ControlClick($EvosusWindow, "Save Payment >", "[ID:22]") ; Click "Save Payment"
+		WinWaitActive("Process Credit Card", "", 2)
+		ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
+		ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
+		WinWaitActive("Confirm Bypass", "", 2) ; click "Yes"
+		ControlClick("Confirm Bypass", "", "[ID:6]")
+		WinWaitActive("Payment", "", 2) ; Wait for "Successfully saved payment"
+		ControlClick("Payment", "", "[ID:2]") ; Click "OK"
+		WinWaitActive("Deliver Items?", "", 2)
+		ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
+	
+		; INVOICE ORDER
+		WinActivate($EvosusWindow, 10)
+		ControlClick($EvosusWindow, "", "[ID:233]") ; Options
+		Sleep(120)
+		Send("{DOWN}{DOWN}{DOWN}")
+		Sleep(120)
+		Send("{ENTER}")
+	; If msg box response = $IDNO
+		; Return (exit the function)
+		ElseIf	($PaymentDetails = $IDNO) Then
+			Return
+	EndIf
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
