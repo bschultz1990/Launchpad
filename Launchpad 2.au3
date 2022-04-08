@@ -360,7 +360,6 @@ EndFunc ; azPmt()
 
 
 Func bypassAndInvoice()
-	; WinWaitActive("Process Credit Card", "", 10)
 	; Create a new yes/no msg box on top of everything else
 	Local $PaymentDetails = MsgBox(4+262144, "Info OK?", "Payment Details look good?", 0, $AppTitle)
 	; If msg box respons = $IDYES
