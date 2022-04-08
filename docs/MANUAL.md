@@ -1,13 +1,13 @@
 # Launchpad Manual
 
 # Contents
-- [Setup](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#setup)
-  - [Tweaking Addresses](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#tweaking-addresses)
-- [Pellethead.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#pelletheadcom)
-- [Amazon.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#amazoncom)
-- [eBay.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#ebaycom)
-- [WalMart.com](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#walmartcom)
-- [Hotkeys](https://github.com/bschultz1990/Launchpad/blob/main/MANUAL.md#hotkeys)
+- [Setup](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#setup)
+  - [Tweaking Addresses](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#tweaking-addresses)
+- [Pellethead.com](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#pelletheadcom)
+- [Amazon.com](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#amazoncom)
+- [eBay.com](https://github.com/bschultz1990/Launchpad/edit/main/docs/MANUAL.md#ebaycom)
+- [WalMart.com](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#walmartcom)
+- [Hotkeys](https://github.com/bschultz1990/Launchpad/blob/main/docs/MANUAL.md#hotkeys)
 
 # Setup
 
@@ -111,6 +111,8 @@ The other platforms behave much the same, but I will mark the differences as we 
 - **No Memo Button** There is no payment memo input button since your memo for eBay orders is the eBay order number itself. This is taken care of automatically.
 - **Payment (AZ, Card, PayPal)** *Use only when Evosus payment screen is visible!* Inputs your payment memo, selects "Pay in Full," selects appropriate payment method, waits for your to push `Enter`, speeds through the payment confirmation screens, and allows you to select which items to invoice.
 
+### Note about eBay and shipping to Erlanger, KY...
+> We reguarly ship items to a hub a Kentucky warehouse, which will then get forwarded on to an international customer. In this case, the customer's profile in Evosus needs to match the Erlanger warehouse address. However, if you enter the customer via Launchpad, it will copy over the customer's physical address, not the Kentucky warehouse address. There are two ways to get around this. First, you can enter the warehouse address manually. Second, you can let Launchpad create a profile for the customer with the customer's physical address. Afterwards, you can go into their profile and change the address to the Erlanger, KY warehouse. This second method will keep Evosus from hanging because it won't try to search for duplicate addresses during the profile creation process.
 
 ## WalMart.com
 
