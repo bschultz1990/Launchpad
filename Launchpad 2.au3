@@ -368,23 +368,45 @@ Func bypassAndInvoice()
 	If ($PaymentDetails = $IDYES) Then
 		WinActivate ($EvosusWindow) ; Activate Evosus window
 		ControlClick($EvosusWindow, "Save Payment >", "[ID:22]") ; Click "Save Payment"
-		WinWaitActive("Process Credit Card", "", 2)
-		ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
-		ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
-		WinWaitActive("Confirm Bypass", "", 2) ; click "Yes"
-		ControlClick("Confirm Bypass", "", "[ID:6]")
-		WinWaitActive("Payment", "", 2) ; Wait for "Successfully saved payment"
-		ControlClick("Payment", "", "[ID:2]") ; Click "OK"
-		WinWaitActive("Deliver Items?", "", 2)
-		ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
+		Local $CCWin = WinWaitActive("Process Credit Card", "", 5)
+			If ($CCWin <> 0) Then
+			ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
+			ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
+			ElseIf ($CCWin = 0) Then
+			Return
+			EndIf
+		Local $CBWin = WinWaitActive("Confirm Bypass", "", 5) ; click "Yes"
+			If $CBWin <> 0 Then
+			ControlClick("Confirm Bypass", "", "[ID:6]")
+			ElseIf $CBWin = 0 Then
+			Return
+			EndIf
+		Local $PWin = WinWaitActive("Payment", "", 5) ; Wait for "Successfully saved payment"
+			If ($PWin <> 0) Then
+			ControlClick("Payment", "", "[ID:2]") ; Click "OK"
+			ElseIf ($PWin = 0) Then
+			Return
+			EndIf
+		Local $DIWin = WinWaitActive("Deliver Items?", "", 5)
+			If $DIWin <> 0 Then
+			ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
+			ElseIf $DIWin = 0 Then
+			Return
+			EndIf			
 	
 		; INVOICE ORDER
 		WinActivate($EvosusWindow, 10)
-		ControlClick($EvosusWindow, "", "[ID:233]") ; Options
-		Sleep(120)
-		Send("{DOWN}{DOWN}{DOWN}")
-		Sleep(120)
-		Send("{ENTER}")
+		Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
+		If ($EWinCheck <> 0) Then
+			ControlClick($EvosusWindow, "", "[ID:233]") ; Options
+			Sleep(120)
+			Send("{DOWN}{DOWN}{DOWN}")
+			Sleep(120)
+			Send("{ENTER}")
+		Else
+			Return
+		EndIf
+
 	; If msg box response = $IDNO
 		; Return (exit the function)
 		ElseIf	($PaymentDetails = $IDNO) Then
