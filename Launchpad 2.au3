@@ -746,7 +746,7 @@ Func importOrder()
 	GUISetState(@SW_HIDE, $AppTitle) ; Hide the main window
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
 	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
-	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1])
+	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]+35+$AppHeight) ;Keep the window from hiding under the main window
 	$orderArray = StringSplit($input, "	")
 	
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
@@ -826,7 +826,7 @@ Func inputMemo()
 	GUISetState(@SW_HIDE, $AppTitle) ;Hide the main window
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
 	$mainWinPos = WinGetPos($AppTitle) ; Get main window position.
-	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ; Put InputBox where main window was.
+	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]+35+$AppHeight) ; Keep memo box from being covered by main window.
 	GUISetState(@SW_SHOW, $AppTitle); Show the main window
 
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
