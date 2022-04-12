@@ -296,6 +296,7 @@ Func btnAddress()
 	If UBound($orderArray) > 10 Then ; If address field exists, do stuff.
 		ClipPut($orderArray[11])
 		WinActivate($EvosusWindow)
+		Send("!gc"); Go to Customer tab
 		ControlClick($EvosusWindow, "Street Name", 49); Click on Street Name to clear Address Field
 		ControlClick($EvosusWindow, "Address", 52); Click on Address field
 		ControlFocus ($EvosusWindow, "", 63); Focus address field in the Evosus window
@@ -332,13 +333,16 @@ Func btnAzCst()
 	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
 	ClipPut($orderArray[12]); Load Address Line 2
 	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
+	ClipPut($orderArray[14]) ; Load City
+	ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
 		; TODO: Add a preferences screen.
 		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		ClipPut($orderArray[14]) ; Load City
-		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
+		;~ ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
+		;~ ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
 		; Else, do this:
 	ClipPut($orderArray[16]) ; Load Postal Code
 	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
+	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
 	Else
 		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
 		orderInfo() ; Show user info box right away.
@@ -389,7 +393,7 @@ Func bypassAndInvoice()
 			ElseIf ($PWin = 0) Then
 			Return
 			EndIf
-		Local $DIWin = WinWaitActive("Deliver Items?", "", 5)
+		Local $DIWin = WinWaitActive("Deliver Items?", "", 10)
 			If $DIWin <> 0 Then
 			ControlClick("Deliver Items?", "", "[ID:7]") ; No. Don't Deliver.
 			ElseIf $DIWin = 0 Then
@@ -768,12 +772,11 @@ EndFunc ; clearOrder
 
 Func importOrder()
 	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
-	WinSetState($AppTitle, "", @SW_HIDE) ;Hide the main window, take II
+	WinSetOnTop($AppTitle, "", $WINDOWS_NOONTOP); Set main window not on top.
 	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ;Keep the window from hiding under the main window
 	$orderArray = StringSplit($input, "	")
 	
-	;~ GUISetState(@SW_SHOW, $AppTitle); Show the main window
-	WinSetState($AppTitle, "", @SW_SHOW) ; Show the main window, take II
+	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
 
 	If $orderArray[1] = "Amazon" Or $orderArray[1] = "Amazon.ca" Then
@@ -849,11 +852,12 @@ EndFunc ; phoneFormatter()
 
 Func inputMemo()
 	$mainWinPos = WinGetPos($AppTitle) ; Get main window position.
-	WinSetState($AppTitle, "", @SW_HIDE) ;Hide the main window, take II
+	WinSetOnTop($AppTitle, "", $WINDOWS_NOONTOP); Set Launchpad on top.
+
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
 	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ; Keep memo box from being covered by main window.
-	WinSetState($AppTitle, "", @SW_SHOW) ; Show the main window, take II
-
+	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
+	
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
 	    $pmtMemo = StringRegExp($memo, $regexAMZ, 1)
 	    GUICtrlSetData($statusBar,"Amazon Payments: "&$pmtMemo[0])
@@ -970,3 +974,45 @@ Func ChangeInitials()
 EndFunc ; ==> ChangeInitials
 
 ; END OF METHODS SECTION
+
+Func newCstImport()
+	If UBound($orderArray) > 15 Then ; Check if zip code exists.
+	WinActivate($EvosusWindow)
+	WinActivate("New Customer")
+	newCstWinCheck() ; Check for New Customer window
+
+	; Fill in marketing information as part of customer entry.
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
+	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
+
+	canadaCheck()
+
+	ClipPut($orderArray[8]); Load First Name
+	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
+	ClipPut($orderArray[9]) ; Load Last Name
+	ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
+	ClipPut($orderArray[10]) ; Load Company Name
+	ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
+	ClipPut($orderArray[11]) ; Load Address Line 1
+	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
+	ClipPut($orderArray[12]); Load Address Line 2
+	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
+	ClipPut($orderArray[14]) ; Load City
+	ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
+		; TODO: Add a preferences screen.
+		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
+		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
+		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
+		; Else, do this:
+	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
+	ClipPut($orderArray[16]) ; Load Postal Code
+	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
+	Else
+		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+		orderInfo() ; Show user info box right away.
+	EndIf
+EndFunc ; newCstImport()
