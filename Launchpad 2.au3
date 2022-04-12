@@ -25,6 +25,7 @@ Opt("WinTitleMatchMode", 2); Match any substring in the window title.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
+Global $AppVersion = "v. 2.1.1a"
 Global $AppWidth = 400
 Global $AppHeight = 68
 ;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
@@ -152,6 +153,7 @@ hideWmButtons()
 hideCartButtons()
 hidePaymentButtons()
 
+GUICtrlSetData($statusBar, $AppVersion) ; Show app version
 GUISetState(@SW_SHOW) ; Show the main GUI.
 WinActivate($MainWindow)
 WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
