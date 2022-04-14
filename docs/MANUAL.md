@@ -92,9 +92,11 @@ Copy and paste the payment memo the customer used. Launchpad will create an appr
 
 > **IMPORTANT: Only use this when the Payment screen is visible, as pictured above.**
 
-Fills in the above fields and waits for 10 seconds. Make sure all the fields are filled in correctly. Within 10 seconds, hit "Submit Payment" or just hit `Enter`. Launchpad will speed through to the "Invoice Items" screen where you can select what you want to invoice and the stock site you want to invoice from.
+Fills in the above fields and asks for confirmation. Make sure all the fields are filled in correctly. If everything looks good, hit "Yes". Launchpad will speed through to the "Invoice Items" screen where you can select what you want to invoice and the stock site you want to invoice from.
 
-The other platforms behave much the same, but I will mark the differences as we go.
+If you hit, "No" on the confirmation screen, Launchpad will stop what it's doing and allow you to make changes. If you'd like to submit a payment again, you'll need to reopen the payment screen.
+
+The other platforms behave much the same; differences are marked as necessary.
 
 ## Amazon.com
 
@@ -148,8 +150,6 @@ The first time you choose an option from the ones above, it will ask you for you
 
 ![paste](https://user-images.githubusercontent.com/19655298/162508029-bbdf38ee-d349-41fc-b7b8-cd6c639f92cb.PNG)
 
-
-
 # Hotkeys
 
 If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like to use them in battle:
@@ -169,6 +169,6 @@ If you mouse hover over a button, you will notice a tooltip with a hotkey. Here 
 
 | Name                  | Hotkey       | Description                                                          |
 | --------------------- | ------------ | -------------------------------------------------------------------- |
-| **Item Focus**        | `CTRL+ALT+l` | Brings your cursor to the item input field on an order.              |
+| **Item Focus**        | `CTRL+l`     | Brings your cursor to the item input field on an order.              |
 | **Show Stock Status** | `CTRL+ALT+s` | Looks up the current stock of the order items.                       |
 | **Make Deposit**      | `CTRL+ALT+d` | Bring up the Deposit screen. Works anywhere inside the order window. |
