@@ -630,7 +630,7 @@ Func showAmazonButtons()
 	; Re-set quick text labels. Keep them from disappearing.
 	SetTextMenuLabels ()
 
-	HotKeySet("^!a", "btnAddress") ; Set hotkeys for Amazon buttons.
+	HotKeySet("^!a", "btnAzAddress") ; Set hotkeys for Amazon buttons.
 	HotKeySet("^!c", "btnAzCst")
 	HotKeySet("^!p", "azPmt")
 EndFunc ; showAmazonButtons()
