@@ -13,8 +13,8 @@
 #include <GUIConstantsEx.au3>
 #include <Misc.au3>
 #include <MsgBoxConstants.au3>
-#include <SendMessage.au3>
 #include <WindowsConstants.au3>
+#include <SendMessage.au3>
 
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
@@ -39,7 +39,7 @@ Global $EvosusWindow = "Evosus";
 ; Global $EvosusWindow = "TEST MODE!"
 Global $ShipworksWindow = "ShipWorks"
 Global $ChromeWindow = "Chrome"
-Global $NotepadWindow = WinGetHandle("Notepad++")
+Global $NotepadWindow = WinGetHandle("Notepad")
 Global $pmtMemo[1] ; Payment memo placeholder until we have some data.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
@@ -223,8 +223,7 @@ WEnd
 Func testFunc()
 	ClipPut("The quick brown fox jumps over the lazy dog.")
 	WinActivate($NotepadWindow)
-	_SendMessage($NotepadWindow, $WM_PASTE)
-	ClipPut(_SendMessage($NotepadWindow, $WM_PASTE))
+	_SendMessage($NotepadWindow, $WM_COMMAND, 770, 0)
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
