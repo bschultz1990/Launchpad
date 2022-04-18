@@ -25,7 +25,7 @@ Opt("WinTitleMatchMode", 2); Match any substring in the window title.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
-Global $AppVersion = "v. 2.1.1a"
+Global $AppVersion = "v. 2.1.1"
 Global $AppWidth = 400
 Global $AppHeight = 68
 ;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
@@ -184,21 +184,21 @@ While 1
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
 	GUICtrlSetOnEvent($Btn_AzAddress, "btnAzAddress") ; AMAZON
-	GUICtrlSetOnEvent($Btn_AzCst, "btnAzCst")
+	GUICtrlSetOnEvent($Btn_AzCst, "newCstImport")
 	GUICtrlSetOnEvent($Btn_AzPmt, "azPmt")
 
 	GUICtrlSetOnEvent($Btn_ebLookCst, "ebLook"); EBAY
-	GUICtrlSetOnEvent($Btn_EbCst, "ebCst")
+	GUICtrlSetOnEvent($Btn_EbCst, "newCstImport")
 	GUICtrlSetOnEvent($Btn_EbPmt, "ebPmt")
 
 	GUICtrlSetOnEvent($Btn_CtLookup, "ctLookup") ; CART
-	GUICtrlSetOnEvent($Btn_CtCst, "ctCst")
+	GUICtrlSetOnEvent($Btn_CtCst, "newCstImport")
 	GUICtrlSetOnEvent($Btn_CtCard, "ctPmt") ; One function for multiple payment methods.
 	GUICtrlSetOnEvent($Btn_CtPayPal, "ctPmt")
 	GUICtrlSetOnEvent($Btn_CtAmazon, "ctPmt")
 
 	GUICtrlSetOnEvent($Btn_WmAddress, "wmAddress") ; WAL-MART
-	GUICtrlSetOnEvent($Btn_WmCst, "wmCst")
+	GUICtrlSetOnEvent($Btn_WmCst, "newCstImport")
 	GUICtrlSetOnEvent($Btn_WmPmt, "wmPmt")
 
 	; POPUP MENU EVENTS SECTION
@@ -250,6 +250,7 @@ Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 EndFunc ; evosusStockLookup()
 
 Func evosusDeposit() ; Secret Evosus Deposit Function! :)
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:25]", "SelectString", "Parts")
 	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
@@ -270,10 +271,6 @@ Func canadaCheck()
 		Global $CAZip = StringRegExp($orderArray[16], $regexCA, 1) ; Return an array of matches. No offset.
 		ControlFocus("New Customer", "", 69) ; Focus the dropdown control
 		ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
-		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 	EndIf
 EndFunc ; canadaCheck()
 
@@ -306,49 +303,6 @@ Func btnAddress()
 			orderInfo() ; Show user info box right away.
 	EndIf
 EndFunc ; $Btn_AzAddress
-
-Func btnAzCst()
-	If UBound($orderArray) > 15 Then ; Check if zip code exists.
-	WinActivate($EvosusWindow)
-	WinActivate("New Customer")
-	newCstWinCheck() ; Check for New Customer window
-
-	; Fill in marketing information as part of customer entry.
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-	canadaCheck()
-
-	ClipPut($orderArray[8]); Load First Name
-	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-	ClipPut($orderArray[9]) ; Load Last Name
-	ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-	ClipPut($orderArray[10]) ; Load Company Name
-	ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-	ClipPut($orderArray[11]) ; Load Address Line 1
-	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-	ClipPut($orderArray[12]); Load Address Line 2
-	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-	ClipPut($orderArray[14]) ; Load City
-	ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-		; TODO: Add a preferences screen.
-		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		;~ ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
-		;~ ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
-		; Else, do this:
-	ClipPut($orderArray[16]) ; Load Postal Code
-	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
-	Else
-		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-		orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; btnAzCst()
-
 
 Func azPmt()
 	WinActivate($EvosusWindow)
@@ -444,47 +398,6 @@ Func ebLook()
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
 
-Func ebCst()
-	If UBound($orderArray) > 16 Then ; Check if phone number exists
-		WinActivate($EvosusWindow)
-		WinActivate("New Customer")
-		newCstWinCheck() ; Check for New Customer window
-
-		; Fill in marketing information as part of customer entry.
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-
-		canadaCheck()
-
-		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		ClipPut($orderArray[14]) ; Load City
-		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone field.
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-		ClipPut($orderArray[16]) ; Load Postal Code
-		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-		Else
-			MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-			orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; ebLook()
-
 Func ebPmt()
 	WinActivate($EvosusWindow)
 	ClipPut($orderArray[4]) ; Load eBay order number
@@ -497,53 +410,6 @@ Func ebPmt()
 	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - EBAY") ; Select Ebay payment method.
 	bypassAndInvoice()
 EndFunc ; ebPmt()
-
-
-Func ctCst()
-	If UBound($orderArray) > 15 Then ; Check if zip code exists.
-		WinActivate($EvosusWindow)
-		WinActivate("New Customer")
-		newCstWinCheck()
-
-		; Fill in marketing information as part of customer entry.
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-		ClipPut($orderArray[21]) ; Load email address
-		ControlSend("New Customer", "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "{CTRLDOWN}v{CTRLUP}") ; Paste email address
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone field to make sure it stays.
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-
-		canadaCheck()
-		
-			; TODO: Add a preferences screen.
-			; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-			ClipPut($orderArray[14]) ; Load City
-			ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-			; Else, do this:
-		ClipPut($orderArray[16]) ; Load Postal Code
-		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-
-		Else
-			MsgBox(64, "Missing Order Info.", "Zip code line nonexistent. Double check order details with the info button.") ; Info box.
-			orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; ctCst()
 
 Func ctPmt()
 	WinActivate($EvosusWindow)
@@ -583,12 +449,6 @@ Func wmAddress()
 	btnAddress()
 	wmWebsite()
 EndFunc ; wmAddress()
-
-Func wmCst()
-	GUICtrlSetData($statusBar, $orderArray[2]); Show WalMart order number in status bar.
-	ebCst()
-	wmWebsite()
-EndFunc ; wmCst()
 
 Func wmPmt()
 	WinActivate($EvosusWindow)
@@ -983,13 +843,21 @@ Func newCstImport()
 
 	; Fill in marketing information as part of customer entry.
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Parts") ; Select "Parts"
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
 	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
 	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
 
 	canadaCheck()
+
+	; Enter Phone if order is not Amazon.com
+	If ($orderArray[1] <> "Amazon") Then
+		ClipPut($orderArray[17]) ; Load phone number
+		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
+		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
+		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
+	EndIf
 
 	ClipPut($orderArray[8]); Load First Name
 	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
@@ -1009,10 +877,24 @@ Func newCstImport()
 		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
 		; Else, do this:
 	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
+
+	; email Check
+	If ($orderArray[1] = "Earth Sense") Then
+		ClipPut($orderArray[21]) ; Load email address
+		ControlSend("New Customer", "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "{CTRLDOWN}v{CTRLUP}") ; Paste email address
+	EndIf
+
 	ClipPut($orderArray[16]) ; Load Postal Code
 	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
+
+	If ($orderArray[1] = "WalMart") Then
+		wmWebsite()
+	EndIf
+
 	Else
 		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
 		orderInfo() ; Show user info box right away.
 	EndIf
 EndFunc ; newCstImport()
+
+;~ 1034 lines
