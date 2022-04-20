@@ -223,7 +223,8 @@ Func testFunc()
 		WinActivate($EvosusWindow, 10)
 		Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
 		If ($EWinCheck <> 0) Then
-			WinMenuSelectItem($EvosusWindow, "", "&Go To", "Customers")
+			ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:136]")
+			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:136]", "SelectString", "Add")
 		EndIf
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
