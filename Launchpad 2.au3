@@ -15,6 +15,8 @@
 #include <MsgBoxConstants.au3>
 #include <WindowsConstants.au3>
 
+#include <GuiTreeView.au3>
+
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
 
@@ -37,7 +39,6 @@ Global $orderArray
 Global $EvosusWindow = "Evosus";
 ; Global $EvosusWindow = "TEST MODE!"
 Global $ShipworksWindow = "ShipWorks"
-Global $ChromeWindow = "Chrome"
 Global $NotepadWindow = WinGetHandle("Notepad")
 Global $pmtMemo[1] ; Payment memo placeholder until we have some data.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
@@ -220,12 +221,7 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-		WinActivate($EvosusWindow, 10)
-		Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
-		If ($EWinCheck <> 0) Then
-			ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:136]")
-			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:136]", "SelectString", "Add")
-		EndIf
+
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -285,27 +281,20 @@ Func wmWebsite()
 EndFunc ; wmWebsite()
 
 Func btnAzAddress()
-	WinActivate($ChromeWindow)
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($AmazonSearch & $orderArray[3])
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste Amazon order number and GO
-
+	ShellExecute($AmazonSearch & $orderArray[3])
 	btnAddress()
 EndFunc ; btnAzAddress()
 
 Func btnAddress()
 	If UBound($orderArray) > 10 Then ; If address field exists, do stuff.
-		ClipPut($orderArray[11])
 		WinActivate($EvosusWindow)
 		WinMenuSelectItem($EvosusWindow, "", "&Go To", "Customers")
-		ControlClick($EvosusWindow, "Street Name", 49); Click on Street Name to clear Address Field
 		ControlClick($EvosusWindow, "Address", 52); Click on Address field
-		ControlFocus ($EvosusWindow, "", 63); Focus address field in the Evosus window
-		ControlSend($EvosusWindow, "", 63, "{CTRLDOWN}v{CTRLUP}{ENTER}")
-		Else
-			MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
-			orderInfo() ; Show user info box right away.
+		ControlSetText($EvosusWindow, "","[CLASS:ThunderRT6TextBox; INSTANCE:5]", $orderArray[11]); Set address text
+		ControlClick($EvosusWindow, "", 56); Click lookup customer.
+	Else
+		MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
+		orderInfo() ; Show user info box right away.
 	EndIf
 EndFunc ; $Btn_AzAddress
 
@@ -365,39 +354,18 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	WinActivate($ChromeWindow) 
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($cartSearch[0] & $orderArray[2] & $cartSearch[1]) ; Concatenate and load the entire Cart URL
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste last part of Cart search url and GO.
-
-	If WinActivate ($ChromeWindow) = 0 Then
-		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
-	EndIf
+	ShellExecute($cartSearch[0] & $orderArray[2] & $cartSearch[1])
 	btnAddress()
 EndFunc ; ctLookup()
 
 
 Func ebLook()
-	WinActivate($ChromeWindow) 
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($ebaySearch & $orderArray[4]) ; Load eBay search url
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste eBay order number into address bar and GO
-
+	ShellExecute($ebaySearch & $orderArray[4])
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
 
 Func wmAddress()
-	WinActivate($ChromeWindow)
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($wmSearch) ; Load WalMart Seller Central
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste WalMart Seller Central and GO
-
-	If WinActivate ($ChromeWindow) = 0 Then
-		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
-	EndIf
+	ShellExecute($wmSearch)
 	btnAddress()
 	wmWebsite()
 EndFunc ; wmAddress()
@@ -710,43 +678,43 @@ EndFunc
 Func Oos()
     InitialsCheck()
     ClipPut($OosText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func Fraud()
     InitialsCheck()
     ClipPut($FraudText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func Backordered()
     InitialsCheck()
     ClipPut($BoText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func BadAddress()
     InitialsCheck()
     ClipPut($BadAddressText[0] & $orderArray[11] & $BadAddressText[1] & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func BadAddressContacted()
     InitialsCheck()
     ClipPut($BadAddressContactedText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func EmailTracking()
     InitialsCheck()
     ClipPut($EmailTrackingText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 Endfunc
 
 Func EmailShippingChange()
     InitialsCheck()
     ClipPut($EmailshippingChangeText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func InitialsCheck()
@@ -798,13 +766,11 @@ Func newCstImport()
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-	EndIf
 
-	;~ If ($orderArray[1] <> "Amazon") Then
-	;~ 	ControlClick($NCWindow, "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-	;~ 	ControlSend($NCWindow, "", "[CLASS:MSMaskWndClass; INSTANCE:2]", "v") ; Send right arrow to keep number from disappearing later.
-	;~ 	ControlCommand($NCWindow, "", "[CLASS:MSMaskWndClass; INSTANCE:2]", "EditPaste", $orderArray[17]); Paste phone number
-	;~ EndIf
+		;~ ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
+		;~ ControlSetText("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]", $orderArray[17]); Paste phone number
+
+	EndIf
 
 	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:22]", "EditPaste", $orderArray[8]) ;First Name
 	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:21]", "EditPaste", $orderArray[9]) ;Last Name
