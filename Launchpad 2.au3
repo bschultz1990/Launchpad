@@ -15,6 +15,8 @@
 #include <MsgBoxConstants.au3>
 #include <WindowsConstants.au3>
 
+#include <GuiTreeView.au3>
+
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
 
@@ -25,7 +27,7 @@ Opt("WinTitleMatchMode", 2); Match any substring in the window title.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
-Global $AppVersion = "v. 2.1.1a"
+Global $AppVersion = "v. 2.1.1"
 Global $AppWidth = 400
 Global $AppHeight = 68
 ;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
@@ -37,7 +39,7 @@ Global $orderArray
 Global $EvosusWindow = "Evosus";
 ; Global $EvosusWindow = "TEST MODE!"
 Global $ShipworksWindow = "ShipWorks"
-Global $ChromeWindow = "Chrome"
+Global $NotepadWindow = WinGetHandle("Notepad")
 Global $pmtMemo[1] ; Payment memo placeholder until we have some data.
 Global $regexAMZ = "P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}|P01-[A-Za-z0-9]{7}-[A-Za-z0-9]{7}"
 Global $regexCRD = "\b\d{11}"
@@ -57,11 +59,11 @@ Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $hMenu)
 Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $hMenu)
 Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
 
-Global $OosText = "Item out of stock. Order and payment entered."
+Global $OosText = "Item out of stock."
 Global $FraudText = "Potential fraud. Order and payment entered."
-Global $BoText = "Item backordered. Order and payment entered."
+Global $BoText = "Item backordered."
 Global $BadAddressText[2] = ["Hello! We're processing your Pellethead order and your shipping address (", ") is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"]
-Global $BadAddressContactedText = "Contacted customer about bad address. Order and payment entered."
+Global $BadAddressContactedText = "Contacted customer about bad address."
 Global $EmailTrackingText = "Hello! Thanks for reaching out! Your tracking number is below and order attached. I just created the label, so it might take up to 1 business day to show movement."
 Global $EmailShippingChangeText = "Hello! I'm contacting you in regard to your recent Pellethead.com order. The shipping service you requested (First Class Mail International) was not available for your package.  USPS was giving an estimate as far out as 999 days. However, we managed to upgrade you to FedEx International Ground at no extra cost. Your tracking number is below. It may take a day to show movement, as the label just got created. Thank you in advance for understanding and hope you have a great rest of day."
 
@@ -184,22 +186,22 @@ While 1
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
 	GUICtrlSetOnEvent($Btn_AzAddress, "btnAzAddress") ; AMAZON
-	GUICtrlSetOnEvent($Btn_AzCst, "btnAzCst")
-	GUICtrlSetOnEvent($Btn_AzPmt, "azPmt")
+	GUICtrlSetOnEvent($Btn_AzCst, "newCstImport")
+	GUICtrlSetOnEvent($Btn_AzPmt, "payment")
 
 	GUICtrlSetOnEvent($Btn_ebLookCst, "ebLook"); EBAY
-	GUICtrlSetOnEvent($Btn_EbCst, "ebCst")
-	GUICtrlSetOnEvent($Btn_EbPmt, "ebPmt")
+	GUICtrlSetOnEvent($Btn_EbCst, "newCstImport")
+	GUICtrlSetOnEvent($Btn_EbPmt, "payment")
 
 	GUICtrlSetOnEvent($Btn_CtLookup, "ctLookup") ; CART
-	GUICtrlSetOnEvent($Btn_CtCst, "ctCst")
-	GUICtrlSetOnEvent($Btn_CtCard, "ctPmt") ; One function for multiple payment methods.
-	GUICtrlSetOnEvent($Btn_CtPayPal, "ctPmt")
-	GUICtrlSetOnEvent($Btn_CtAmazon, "ctPmt")
+	GUICtrlSetOnEvent($Btn_CtCst, "newCstImport")
+	GUICtrlSetOnEvent($Btn_CtCard, "payment") ; One function for multiple payment methods.
+	GUICtrlSetOnEvent($Btn_CtPayPal, "payment")
+	GUICtrlSetOnEvent($Btn_CtAmazon, "payment")
 
 	GUICtrlSetOnEvent($Btn_WmAddress, "wmAddress") ; WAL-MART
-	GUICtrlSetOnEvent($Btn_WmCst, "wmCst")
-	GUICtrlSetOnEvent($Btn_WmPmt, "wmPmt")
+	GUICtrlSetOnEvent($Btn_WmCst, "newCstImport")
+	GUICtrlSetOnEvent($Btn_WmPmt, "payment")
 
 	; POPUP MENU EVENTS SECTION
 	_PopUpMenuItemSetOnEvent ($Oos, "Oos", "")
@@ -232,7 +234,6 @@ EndFunc ; newCstWinCheck()
 
 Func printLabel()
 	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
-	WinWaitActive($ShipworksWindow, "")
 	Send("{F10}")
 EndFunc ; printLabel()
 
@@ -250,6 +251,7 @@ Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 EndFunc ; evosusStockLookup()
 
 Func evosusDeposit() ; Secret Evosus Deposit Function! :)
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:25]", "SelectString", "Parts")
 	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
@@ -270,10 +272,6 @@ Func canadaCheck()
 		Global $CAZip = StringRegExp($orderArray[16], $regexCA, 1) ; Return an array of matches. No offset.
 		ControlFocus("New Customer", "", 69) ; Focus the dropdown control
 		ControlCommand("New Customer", "", "[ID:69]", "SelectString", "Canada") ; Select "Canada"
-		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
 	EndIf
 EndFunc ; canadaCheck()
 
@@ -283,87 +281,22 @@ Func wmWebsite()
 EndFunc ; wmWebsite()
 
 Func btnAzAddress()
-	WinActivate($ChromeWindow)
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($AmazonSearch & $orderArray[3])
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste Amazon order number and GO
-
+	ShellExecute($AmazonSearch & $orderArray[3])
 	btnAddress()
 EndFunc ; btnAzAddress()
 
 Func btnAddress()
 	If UBound($orderArray) > 10 Then ; If address field exists, do stuff.
-		ClipPut($orderArray[11])
 		WinActivate($EvosusWindow)
-		Send("!gc"); Go to Customer tab
-		ControlClick($EvosusWindow, "Street Name", 49); Click on Street Name to clear Address Field
+		WinMenuSelectItem($EvosusWindow, "", "&Go To", "Customers")
 		ControlClick($EvosusWindow, "Address", 52); Click on Address field
-		ControlFocus ($EvosusWindow, "", 63); Focus address field in the Evosus window
-		ControlSend($EvosusWindow, "", 63, "{CTRLDOWN}v{CTRLUP}{ENTER}")
-		Else
-			MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
-			orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; $Btn_AzAddress
-
-Func btnAzCst()
-	If UBound($orderArray) > 15 Then ; Check if zip code exists.
-	WinActivate($EvosusWindow)
-	WinActivate("New Customer")
-	newCstWinCheck() ; Check for New Customer window
-
-	; Fill in marketing information as part of customer entry.
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-	canadaCheck()
-
-	ClipPut($orderArray[8]); Load First Name
-	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-	ClipPut($orderArray[9]) ; Load Last Name
-	ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-	ClipPut($orderArray[10]) ; Load Company Name
-	ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-	ClipPut($orderArray[11]) ; Load Address Line 1
-	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-	ClipPut($orderArray[12]); Load Address Line 2
-	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-	ClipPut($orderArray[14]) ; Load City
-	ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-		; TODO: Add a preferences screen.
-		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		;~ ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
-		;~ ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
-		; Else, do this:
-	ClipPut($orderArray[16]) ; Load Postal Code
-	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
+		ControlSetText($EvosusWindow, "","[CLASS:ThunderRT6TextBox; INSTANCE:5]", $orderArray[11]); Set address text
+		ControlClick($EvosusWindow, "", 56); Click lookup customer.
 	Else
-		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+		MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
 		orderInfo() ; Show user info box right away.
 	EndIf
-EndFunc ; btnAzCst()
-
-
-Func azPmt()
-	WinActivate($EvosusWindow)
-	ClipPut($orderArray[3]) ; Load Amazon Order Number
-	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste Amazon Order Number
-	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
-	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
-	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon") ; Select Amazon method.
-	bypassAndInvoice()
-
-EndFunc ; azPmt()
-
+EndFunc ; $Btn_AzAddress
 
 Func bypassAndInvoice()
 	; Create a new yes/no msg box on top of everything else
@@ -421,187 +354,21 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	WinActivate($ChromeWindow) 
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($cartSearch[0] & $orderArray[2] & $cartSearch[1]) ; Concatenate and load the entire Cart URL
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste last part of Cart search url and GO.
-
-	If WinActivate ($ChromeWindow) = 0 Then
-		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
-	EndIf
+	ShellExecute($cartSearch[0] & $orderArray[2] & $cartSearch[1])
 	btnAddress()
 EndFunc ; ctLookup()
 
 
 Func ebLook()
-	WinActivate($ChromeWindow) 
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($ebaySearch & $orderArray[4]) ; Load eBay search url
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste eBay order number into address bar and GO
-
+	ShellExecute($ebaySearch & $orderArray[4])
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
 
-Func ebCst()
-	If UBound($orderArray) > 16 Then ; Check if phone number exists
-		WinActivate($EvosusWindow)
-		WinActivate("New Customer")
-		newCstWinCheck() ; Check for New Customer window
-
-		; Fill in marketing information as part of customer entry.
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-
-		canadaCheck()
-
-		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		ClipPut($orderArray[14]) ; Load City
-		ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone field.
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-		ClipPut($orderArray[16]) ; Load Postal Code
-		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-		Else
-			MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-			orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; ebLook()
-
-Func ebPmt()
-	WinActivate($EvosusWindow)
-	ClipPut($orderArray[4]) ; Load eBay order number
-	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste eBay Order Number
-	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
-	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
-	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - EBAY") ; Select Ebay payment method.
-	bypassAndInvoice()
-EndFunc ; ebPmt()
-
-
-Func ctCst()
-	If UBound($orderArray) > 15 Then ; Check if zip code exists.
-		WinActivate($EvosusWindow)
-		WinActivate("New Customer")
-		newCstWinCheck()
-
-		; Fill in marketing information as part of customer entry.
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]", "SelectString", "Male") ; Select "Male"
-
-		ClipPut($orderArray[8]); Load First Name
-		ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-		ClipPut($orderArray[9]) ; Load Last Name
-		ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-		ClipPut($orderArray[10]) ; Load Company Name
-		ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-		ClipPut($orderArray[11]) ; Load Address Line 1
-		ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-		ClipPut($orderArray[12]); Load Address Line 2
-		ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-		ClipPut($orderArray[21]) ; Load email address
-		ControlSend("New Customer", "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "{CTRLDOWN}v{CTRLUP}") ; Paste email address
-		ClipPut($orderArray[17]) ; Load phone number
-		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone field to make sure it stays.
-		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-
-		canadaCheck()
-		
-			; TODO: Add a preferences screen.
-			; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-			ClipPut($orderArray[14]) ; Load City
-			ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
-			; Else, do this:
-		ClipPut($orderArray[16]) ; Load Postal Code
-		ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-
-		Else
-			MsgBox(64, "Missing Order Info.", "Zip code line nonexistent. Double check order details with the info button.") ; Info box.
-			orderInfo() ; Show user info box right away.
-	EndIf
-EndFunc ; ctCst()
-
-Func ctPmt()
-	WinActivate($EvosusWindow)
-	ClipPut($orderArray[3]) ; Load Amazon Order Number
-	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ClipPut($pmtMemo[0]) ; Load payment memo
-	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste payment memo
-	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
-	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
-	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-
-	If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
-			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - PayPal") ; Select Paypal
-
-		ElseIf (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
-			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
-
-		ElseIf (StringRegExp($pmtMemo[0], $regexAMZ, 0)) = 1  Then ; Check Amazon memo
-			ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-			ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon
-	EndIf
-	bypassAndInvoice()
-EndFunc ; ctPmt
-
 Func wmAddress()
-	WinActivate($ChromeWindow)
-	Send("{CTRLDOWN}t{CTRLUP}") ; Make new tab. Automatically focuses address bar.
-	WinWaitActive("New Tab", "", 1) ; Wait for the new tab window to appear.
-	ClipPut($wmSearch) ; Load WalMart Seller Central
-	Send("{CTRLDOWN}v{CTRLUP}{ENTER}") ; Paste WalMart Seller Central and GO
-
-	If WinActivate ($ChromeWindow) = 0 Then
-		MsgBox(64, "Chrome Not Open", "Google Chrome is not open. Open Google Chrome and try again.")
-	EndIf
+	ShellExecute($wmSearch)
 	btnAddress()
 	wmWebsite()
 EndFunc ; wmAddress()
-
-Func wmCst()
-	GUICtrlSetData($statusBar, $orderArray[2]); Show WalMart order number in status bar.
-	ebCst()
-	wmWebsite()
-EndFunc ; wmCst()
-
-Func wmPmt()
-	WinActivate($EvosusWindow)
-	ClipPut($orderArray[2]) ; Load Wal-Mart order number
-	ControlFocus($EvosusWindow, "", "[ID:11]") ; Focus memo field
-	ControlSend($EvosusWindow, "", "[ID:11]", "{CTRLDOWN}v{CTRLUP}") ; Paste Wal-Mart Order Number
-	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
-	ControlClick($EvosusWindow, "", "[ID:21]") ; Uncheck "Print order on Save"
-	ControlClick($EvosusWindow, "", "[ID:10]") ; Focus Method field
-	ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
-	ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
-	bypassAndInvoice()
-EndFunc ; wmPmt()
 
 Func SetTextMenuLabels ()
     GUICtrlSetData($Oos, "Out of Stock")
@@ -630,9 +397,9 @@ Func showAmazonButtons()
 	; Re-set quick text labels. Keep them from disappearing.
 	SetTextMenuLabels ()
 
-	HotKeySet("^!a", "btnAddress") ; Set hotkeys for Amazon buttons.
-	HotKeySet("^!c", "btnAzCst")
-	HotKeySet("^!p", "azPmt")
+	HotKeySet("^!a", "btnAzAddress") ; Set hotkeys for Amazon buttons.
+	HotKeySet("^!c", "newCstImport")
+	HotKeySet("^!p", "payment")
 EndFunc ; showAmazonButtons()
 
 Func showEbayButtons()
@@ -651,8 +418,8 @@ Func showEbayButtons()
 	SetTextMenuLabels ()
 
 	HotKeySet("^!a", "ebLook") ; Enable lookup hotkey
-	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
-	HotKeySet("^!p", "ebPmt") ; Enable memo hotkey
+	HotKeySet("^!c", "newCstImport") ; Enable enter cst. hotkey
+	HotKeySet("^!p", "payment") ; Enable memo hotkey
 EndFunc ; showEbayButtons()
 
 Func showCartButtons()
@@ -678,7 +445,7 @@ Func showCartButtons()
 	SetTextMenuLabels ()
 	
 	HotKeySet("^!a", "ctLookup") ; Enable lookup hotkey
-	HotKeySet("^!c", "ctCst") ; Enable enter cst. hotkey
+	HotKeySet("^!c", "newCstImport") ; Enable enter cst. hotkey
 	HotKeySet("^!4", "inputMemo") ; Enable memo hotkey
 EndFunc ; showCartButtons()
 
@@ -698,8 +465,8 @@ Func showWmButtons()
 	SetTextMenuLabels ()
 
 	HotKeySet("^!a", "wmAddress") ; Enable lookup hotkey
-	HotKeySet("^!c", "ebCst") ; Enable enter cst. hotkey
-	HotKeySet("^!p", "wmPmt") ; Enable memo hotkey
+	HotKeySet("^!c", "newCstImport") ; Enable enter cst. hotkey
+	HotKeySet("^!p", "payment") ; Enable memo hotkey
 EndFunc ; showWmButtons()
 
 Func hidePaymentButtons()
@@ -865,7 +632,7 @@ Func inputMemo()
 		GUICtrlSetState($Btn_CtAmazon, $GUI_ENABLE + $GUI_SHOW); Show Amazon Payments button
 		GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
 		HotKeySet("^!p") ; Clear previous hotkey.
-		HotKeySet("^!p", "ctPmt") ; Set hotkey
+		HotKeySet("^!p", "payment") ; Set hotkey
 		Return $pmtMemo[0]
 
 	    ElseIf(StringRegExp($memo, $regexPPL, 0)= 1) Then
@@ -875,7 +642,7 @@ Func inputMemo()
 			GUICtrlSetState($Btn_CtPayPal, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
 			HotKeySet("^!p") ; Clear previous hotkey.
-			HotKeySet("^!p", "ctPmt") ; Set hotkey
+			HotKeySet("^!p", "payment") ; Set hotkey
 			Return $pmtMemo[0]
 
 	    ElseIf(StringRegExp($memo, $regexCRD, 0) = 1) And (StringRegExp($pmtMemo, $regexPPL, 0)) = 0  Then
@@ -885,7 +652,7 @@ Func inputMemo()
 			GUICtrlSetState($Btn_CtCard, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
 			HotKeySet("^!p") ; Clear previous hotkey.
-			HotKeySet("^!p", "ctPmt") ; Set hotkey
+			HotKeySet("^!p", "payment") ; Set hotkey
 			Return $pmtMemo[0]
 
 	    Else
@@ -911,43 +678,43 @@ EndFunc
 Func Oos()
     InitialsCheck()
     ClipPut($OosText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func Fraud()
     InitialsCheck()
     ClipPut($FraudText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func Backordered()
     InitialsCheck()
     ClipPut($BoText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func BadAddress()
     InitialsCheck()
     ClipPut($BadAddressText[0] & $orderArray[11] & $BadAddressText[1] & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func BadAddressContacted()
     InitialsCheck()
     ClipPut($BadAddressContactedText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func EmailTracking()
     InitialsCheck()
     ClipPut($EmailTrackingText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 Endfunc
 
 Func EmailShippingChange()
     InitialsCheck()
     ClipPut($EmailshippingChangeText & $SigDate)
-    _ToolTip("Text copied!", 1500)
+    _ToolTip("Text copied!", 2000)
 EndFunc
 
 Func InitialsCheck()
@@ -981,9 +748,11 @@ Func newCstImport()
 	WinActivate("New Customer")
 	newCstWinCheck() ; Check for New Customer window
 
+	Local $NCWindow = WinGetHandle("New Customer")
+
 	; Fill in marketing information as part of customer entry.
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]") ; Focus "What?"
-	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Accessories") ; Select "Accessories"
+	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:18]", "SelectString", "Parts") ; Select "Parts"
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]") ; Focus "Contact Type"
 	ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:2]", "SelectString", "Internet/Email") ; Select "Internet/Email"
 	ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:6]") ; Focus "Gender"
@@ -991,28 +760,80 @@ Func newCstImport()
 
 	canadaCheck()
 
-	ClipPut($orderArray[8]); Load First Name
-	ControlSend("New Customer", "", 68, "{CTRLDOWN}v{CTRLUP}") ; Paste First Name
-	ClipPut($orderArray[9]) ; Load Last Name
-	ControlSend("New Customer", "", 67, "{CTRLDOWN}v{CTRLUP}") ; Paste Last Name
-	ClipPut($orderArray[10]) ; Load Company Name
-	ControlSend("New Customer", "", 63, "{CTRLDOWN}v{CTRLUP}") ; Paste Company Name
-	ClipPut($orderArray[11]) ; Load Address Line 1
-	ControlSend("New Customer", "", 74, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 1
-	ClipPut($orderArray[12]); Load Address Line 2
-	ControlSend("New Customer", "", 73, "{CTRLDOWN}v{CTRLUP}") ; Paste Address Line 2
-	ClipPut($orderArray[14]) ; Load City
-	ControlSend("New Customer", "", 72, "{CTRLDOWN}v{CTRLUP}") ; Paste City
+	; Enter Phone if order is not Amazon.com
+	If ($orderArray[1] <> "Amazon") Then
+		ClipPut($orderArray[17]) ; Load phone number
+		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
+		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
+		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
+
+		;~ ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
+		;~ ControlSetText("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]", $orderArray[17]); Paste phone number
+
+	EndIf
+
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:22]", "EditPaste", $orderArray[8]) ;First Name
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:21]", "EditPaste", $orderArray[9]) ;Last Name
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:17]", "EditPaste", $orderArray[10]) ;Company Name
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:26]", "EditPaste", $orderArray[11]); Address1
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:25]", "EditPaste", $orderArray[12]) ;Address2
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:24]", "EditPaste", $orderArray[14]) ;City
 		; TODO: Add a preferences screen.
 		; TODO: Add a checkbox: "Bypass Lookup [F6]" If that's checked, do the following:
-		ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
-		ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
+		;~ ControlFocus("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]") ; Focus State dropdown
+		;~ ControlCommand("New Customer", "", "[CLASS:ThunderRT6ComboBox; INSTANCE:23]", "SelectString", $orderArray[15]); Select the state from customer's profile.
 		; Else, do this:
-	;~ ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}{F6}") ; Paste Postal Code. Look up City and State.
-	ClipPut($orderArray[16]) ; Load Postal Code
-	ControlSend("New Customer", "", 71, "{CTRLDOWN}v{CTRLUP}") ; Paste Postal Code. Look up City and State.
+
+	; email Check
+	If ($orderArray[1] = "Earth Sense") Then
+		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:27]", "EditPaste", $orderArray[21]); Email
+	EndIf
+
+	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:23]", "EditPaste", $orderArray[16]); Paste Zip Code
+	ControlSend($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:23]", "{F6}"); Look up City and State
+
+	If ($orderArray[1] = "WalMart") Then
+		wmWebsite()
+	EndIf
+
 	Else
 		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
 		orderInfo() ; Show user info box right away.
 	EndIf
 EndFunc ; newCstImport()
+
+Func payment()
+	WinActivate($EvosusWindow)
+	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:2]", "UnCheck", ""); Uncheck "Print order on Save"
+	
+	If ($orderArray[1] = "Amazon") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $orderArray[3]); Amazon order number
+		ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon") ; Select Amazon method.
+	ElseIf ($orderArray[1] = "Amazon.ca") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $orderArray[3]); Amazon order number
+		ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Z-Amazon.CA") ; Select Amazon.ca method.
+	ElseIf ($orderArray[1] = "esesstoves") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $orderArray[4]); Paste eBay order number
+		ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - EBAY") ; Select Ebay payment method.
+	ElseIf ($orderArray[1] = "WalMart") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $orderArray[2]); Paste WalMart order number
+		ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
+	ElseIf $orderArray[1] = "Earth Sense" Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $pmtMemo[0]); Paste payment memo
+
+			If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - PayPal") ; Select Paypal
+
+			ElseIf (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
+
+			ElseIf (StringRegExp($pmtMemo[0], $regexAMZ, 0)) = 1  Then ; Check Amazon memo
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon
+		EndIf
+	EndIf
+	bypassAndInvoice()
+EndFunc
