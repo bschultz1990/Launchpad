@@ -17,8 +17,6 @@
 
 #include <GuiTreeView.au3>
 
-; Test push! :)
-
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
 
