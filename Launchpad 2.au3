@@ -285,7 +285,7 @@ Func btnAzAddress()
 	ShellExecute($AmazonSearch & $orderArray[3])
 	btnAddress()
 EndFunc ; btnAzAddress()
-
+;bump
 Func btnAddress()
 	If UBound($orderArray) > 10 Then ; If address field exists, do stuff.
 		WinActivate($EvosusWindow)
@@ -297,6 +297,7 @@ Func btnAddress()
 		MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
 		orderInfo() ; Show user info box right away.
 	EndIf
+		WinActivate($EvosusWindow)
 EndFunc ; $Btn_AzAddress
 
 Func bypassAndInvoice()
