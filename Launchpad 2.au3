@@ -297,6 +297,7 @@ Func btnAddress()
 		MsgBox(64, "Missing Order Info.", "Address line nonexistent. Review order info.") ; Info box.
 		orderInfo() ; Show user info box right away.
 	EndIf
+	WinActivate($EvosusWindow)
 EndFunc ; $Btn_AzAddress
 
 Func bypassAndInvoice()
