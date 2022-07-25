@@ -1,0 +1,91 @@
+---UPDATE CUSTOMER INFO---
+hotkeyset CTRL+ALT+U
+// Once in a profile, click this:
+Window: Evosus Window
+[CLASS:ThunderRT6CommandButton; INSTANCE:60]
+ID: 76
+
+// Wait for this to appear:
+Win. Title: Customer Location
+
+---ADD PHONE NUMBER---
+// Click "Add" phone number
+Win: Customer Location
+[CLASS:ThunderRT6CommandButton; INSTANCE:60]
+ID: 4
+
+// Wait for this to appear:
+WinWaitActive (New Phone Number)
+Class: ThunderRT6FormDC
+
+// ADD Phone Number
+Cst info array[17]
+NEW PASTE METHOD into here:
+[CLASS:MSMaskWndClass; INSTANCE:1]
+
+// ControlClick this:
+[CLASS:ThunderRT6CommandButton; INSTANCE:1]
+ID: 5
+Text: &OK
+
+// Wait for confirmation win
+WinWaitActive:
+Title: Phone Number
+Class: #32770
+
+// click OK
+[CLASS:Button; INSTANCE:1]
+ID: 2
+Text: OK
+
+--- ADD EMAIL ---
+// Control click this:
+[CLASS:ThunderRT6CommandButton; INSTANCE:1]
+ID: 1
+Text: Add
+
+// Wait for this:
+Title: New Email Address
+Class: ThunderRT6FormDC
+
+// NEW PASTE METHOD here:
+Cst info array[21]
+[CLASS:ThunderRT6TextBox; INSTANCE:2]
+ID: 2
+Text: ""
+
+// Click this:
+[CLASS:ThunderRT6CommandButton; INSTANCE:1]
+ID: 4
+Text: &OK
+
+// Wait for this to appear:
+New Email Address - customer'semailhere.com
+Class: #32770
+
+
+
+
+
+--- UPDATE ADDRESS ---
+// Name
+ControlSetText(CUSTOMERLOC, "","[CLASS:ThunderRT6TextBox; INSTANCE:6]", $orderArray[8]); First name
+
+Cst info [9] // Last name
+Paste here:
+	Window: Customer Location
+	[CLASS:ThunderRT6TextBox; INSTANCE:7]
+	ID: 16
+
+// FULL NAME to Contact:
+new variable: cstinfo[8]+cstinfo[9]
+Paste here:
+	Window: Customer Location
+	[CLASS:ThunderRT6TextBox; INSTANCE:9]
+	ID: 18
+
+// Company:
+cstinfo [10]
+Paste here:
+	
+
