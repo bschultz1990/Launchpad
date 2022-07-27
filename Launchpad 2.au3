@@ -182,6 +182,8 @@ While 1
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
 	HotKeySet("^l", "itemFocus") ; Secret item focus function.
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
+	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
+	HotKeySet("^{ENTER}", "selectCustomer")
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -232,6 +234,11 @@ Func newCstWinCheck()
 	WinWaitActive("New Customer", "", 2) ; Wait a second for the New Customer window to appear.
 	EndIf
 EndFunc ; newCstWinCheck()
+
+Func selectCustomer()
+	WinActivate($EvosusWindow, "")
+	ControlClick($EvosusWindow, "Select This Customer", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
+EndFunc ; selectCustomer()
 
 Func printLabel()
 	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
