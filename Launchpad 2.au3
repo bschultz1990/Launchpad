@@ -54,9 +54,10 @@ Global $Oos = _PopUpMenuCreateMenuItem ("Out of Stock", $hMenu)
 Global $Fraud = _PopUpMenuCreateMenuItem ("Fraud?", $hMenu)
 Global $Backordered = _PopUpMenuCreateMenuItem ("Backordered", $hMenu)
 Global $BadAddressContacted = _PopUpMenuCreateMenuItem ("Bad Address, Contacted", $hMenu)
-Global $BadAddress = _PopUpMenuCreateMenuItem ("Email, Bad Address", $hMenu)
-Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $hMenu)
-Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $hMenu)
+Global $eMenu = _PopUpMenuCreate()
+Global $BadAddress = _PopUpMenuCreateMenuItem ("Bad Address, Email", $eMenu)
+Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $eMenu)
+Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $eMenu)
 Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
 
 Global $OosText = "Item out of stock."
