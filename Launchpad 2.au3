@@ -1,6 +1,9 @@
 ; Function Reference
 ; https://www.autoitscript.com/autoit3/docs/functions.htm
 
+; UDF Functions
+; https://www.autoitscript.com/autoit3/docs/libfunctions.htm
+
 ; Language Reference
 ; https://www.autoitscript.com/autoit3/docs/intro/lang_operators.htm
 
@@ -50,18 +53,22 @@ Global $regexCA = "[A-Za-z0-9]{3}\s?[A-Za-z0-9]{3}"
 
 ; POPUP MENU VARIABLES
 Global $hMenu = _PopUpMenuCreate ("^`")
-Global $Oos = _PopUpMenuCreateMenuItem ("Out of Stock", $hMenu)
-Global $Fraud = _PopUpMenuCreateMenuItem ("Fraud?", $hMenu)
-Global $Backordered = _PopUpMenuCreateMenuItem ("Backordered", $hMenu)
-Global $BadAddressContacted = _PopUpMenuCreateMenuItem ("Bad Address, Contacted", $hMenu)
-Global $eMenu = _PopUpMenuCreateMenu("Emails", $eMenu)
-Global $BadAddress = _PopUpMenuCreateMenuItem ("Bad Address, Email", $eMenu)
-Global $EmailTracking = _PopUpMenuCreateMenuItem ("Email, Tracking", $eMenu)
-Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("Email, Shipping Change", $eMenu)
-Global $ExitButton = _PopUpMenuCreateMenuItem ("Change Initials", $hMenu)
+Global $Oos = _PopUpMenuCreateMenuItem ("&Out of Stock", $hMenu)
+Global $Fraud = _PopUpMenuCreateMenuItem ("Frau&d?", $hMenu)
+Global $FraudNote = _PopUpMenuCreateMenuItem ("Fraud Msg. &Note", $hMenu)
+Global $Backordered = _PopUpMenuCreateMenuItem ("B&ackordered", $hMenu)
+Global $BadAddressContacted = _PopUpMenuCreateMenuItem ("&Bad Address, Contacted", $hMenu)
+Global $eMenu = _PopUpMenuCreateMenu("&Emails", $hMenu)
+Global $BadAddress = _PopUpMenuCreateMenuItem ("Bad &Address", $eMenu)
+Global $EmailFraud = _PopUpMenuCreateMenuItem ("&Fraud", $eMenu)
+Global $EmailTracking = _PopUpMenuCreateMenuItem ("&Tracking", $eMenu)
+Global $EmailShippingChange = _PopUpMenuCreateMenuItem ("&Shipping Change", $eMenu)
+Global $ExitButton = _PopUpMenuCreateMenuItem ("&Change Initials", $hMenu)
 
 Global $OosText = "Item out of stock."
 Global $FraudText = "Potential fraud. Order and payment entered."
+Global $FraudNoteText = "Contacted customer about order issue. Requested a call back. Hold order until "
+Global $EmailFraudText[3] = ["Hello! There was an issue processing your Pellethead order "," and it has been put on hold. Please call us back at 920-779-6647 so we can get the order rolling for you. If we do not hear back by "," , your order will be cancelled and your payment refunded. Best regards,"]
 Global $BoText = "Item backordered."
 Global $BadAddressText[2] = ["Hello! We're processing your Pellethead order and your shipping address (", ") is showing undeliverable via USPS. Since this is such a light order, do you have an alternate address or a PO box we could use? Please reply to this message at your earliest convenience so we can get this order rolling for you. Thanks!"]
 Global $BadAddressContactedText = "Contacted customer about bad address."
@@ -209,6 +216,8 @@ While 1
 	; POPUP MENU EVENTS SECTION
 	_PopUpMenuItemSetOnEvent ($Oos, "Oos", "")
 	_PopUpMenuItemSetOnEvent ($Fraud, "Fraud", "")
+	_PopUpMenuItemSetOnEvent ($FraudNote, "FraudNote", "")
+	_PopUpMenuItemSetOnEvent ($EmailFraud, "EmailFraud", "")
 	_PopUpMenuItemSetOnEvent ($Backordered, "Backordered", "")
 	_PopUpMenuItemSetOnEvent ($BadAddressContacted, "BadAddressContacted", "")
 	_PopUpMenuItemSetOnEvent ($BadAddress, "BadAddress", "")
@@ -225,9 +234,16 @@ WEnd
 ; TEST FUNCTION SECTION
 Func testFunc()
 
-
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
+
+Func addDays($dayNum)
+	Local $MyDate = _DateAdd("D", $dayNum, _NowCalc())
+	Local $datePart, $timePart
+	_DateTimeSplit($MyDate, $datePart, $timePart)
+	Local $futureDate = ($datePart[2]&"/"&$datePart[3]&"/"&$datePart[1])
+	Return $futureDate
+EndFunc ; addDays()
 
 Func newCstWinCheck()
 	If WinActivate("New Customer") = 0 Then
@@ -251,8 +267,6 @@ Func itemFocus()
 	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:18]"); Focus Item field
 EndFunc ; funcName()
-
-
 
 Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 	WinActivate($EvosusWindow)
@@ -697,6 +711,12 @@ Func Fraud()
     _ToolTip("Text copied!", 2000)
 EndFunc
 
+Func FraudNote()
+	InitialsCheck()
+	ClipPut($FraudNoteText & addDays(7) & $SigDate)
+    _ToolTip("Text copied!", 2000)
+EndFunc ; FraudNote()
+
 Func Backordered()
     InitialsCheck()
     ClipPut($BoText & $SigDate)
@@ -714,6 +734,12 @@ Func BadAddressContacted()
     ClipPut($BadAddressContactedText & $SigDate)
     _ToolTip("Text copied!", 2000)
 EndFunc
+
+Func EmailFraud()
+	InitialsCheck()
+	ClipPut($EmailFraudText[0] & $orderArray[2] & $EmailFraudText[1] & addDays(7) & $EmailFraudText[2] & $SigDate)
+	_ToolTip("Text copied!", 2000)
+EndFunc ; EmailFraud()
 
 Func EmailTracking()
     InitialsCheck()
