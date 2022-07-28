@@ -30,7 +30,7 @@ Opt("WinTitleMatchMode", 2); Match any substring in the window title.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
-Global $AppVersion = "v. 2.1.1"
+Global $AppVersion = "v. 2.1.2"
 Global $AppWidth = 400
 Global $AppHeight = 68
 ;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
@@ -192,6 +192,7 @@ While 1
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
 	HotKeySet("^{ENTER}", "selectCustomer")
+	HotKeySet("^!u", "updateCustomer"); Update Customer function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -256,6 +257,40 @@ Func selectCustomer()
 	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "Select This Customer", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
 EndFunc ; selectCustomer()
+
+
+
+Func updateCustomer()
+	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
+	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
+	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
+	if ($CLWin <> 0) Then
+		ControlClick("Customer Location", "","[CLASS:ThunderRT6CommandButton; INSTANCE:4]")
+		Local $CPhoneWin = WinWaitActive("New Phone Number", "", 5); Wait for New Phone Number to appear.
+		If ($CPhoneWin <> 0) Then
+			ClipPut($orderArray[17]); Load phone number
+			ControlFocus("New Phone Number", "","[CLASS:MSMaskWndClass; INSTANCE:1]") ; Focus phone # field.
+			ControlSend("New Phone Number", "", "[CLASS:MSMaskWndClass; INSTANCE:1]", "{CTRLDOWN}v{CTRLUP}"); Paste phone #
+			ControlClick("New Phone Number", "&OK", "[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click OK.
+			Local $CConWin = WinWaitActive("New Phone Number", 5); Wait for Confirmation window to appear.
+			If ($CConWin <> 0) Then
+				WinActivate("New Phone Number")
+				ControlFocus("New Phone Number", "OK", 2)
+				ControlClick("New Phone Number", "OK", 2); Click OK.
+			Else
+			GUICtrlSetData($statusBar, "Confirmation box not found. :(")
+			Return
+			EndIf
+		Else
+		Return
+		EndIf
+		; you are here
+	Else
+	Return
+	EndIf
+EndFunc ; updateCustomer()
+
+
 
 Func printLabel()
 	WinActivate($ShipworksWindow, "") ; Activate ShipWorks window and click "Create Label."
