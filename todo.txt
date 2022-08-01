@@ -89,3 +89,10 @@ cstinfo [10]
 Paste here:
 	
 
+-- LAST NAME MISSING PROTOCOL --
+If lastname = ""
+	Paste firstname into company name field.
+Else
+	Paste firstname into firstname field
+	Paste last name into last name field
+	Paste company into company field
