@@ -278,6 +278,9 @@ Func taxCodeAbbr()
 			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
 		ElseIf ($orderArray[1] = "Earth Sense") Then
 			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
+		Else
+			MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+			orderInfo() ; Show order info box right away.
 		EndIf
 	EndIf
 		; Taxes or not?
@@ -286,9 +289,6 @@ Func taxCodeAbbr()
 		Else
 			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
 		EndIf
-	Else
-		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-		orderInfo() ; Show order info box right away.
 EndIf
 EndFunc ; taxCodeAbbr()
 
