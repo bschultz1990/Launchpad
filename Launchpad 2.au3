@@ -186,6 +186,11 @@ While 1
 	GUICtrlSetOnEvent($Btn_Order, "btnOrder")
 	HotKeySet("^!o", "btnOrder")
 
+	HotKeySet("!`", "printOrder")
+	HotKeySet("!d", "printDeliverySlip")
+	HotKeySet("!w", "ctrlWRemap")
+	HotKeySet("!q", "altF4Remap")
+	HotKeySet("{F2}", "promoteInvoice")
 	HotKeySet("^!d", "evosusDeposit") ; Secret Evosus Deposit Function! :)
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
 	HotKeySet("^l", "itemFocus") ; Secret item focus function.
@@ -234,32 +239,56 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-
+	GUICtrlSetData($statusBar, ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"))
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
+Func printOrder()
+	Send("{ALTDOWN}p{ALTUP}")
+EndFunc ; printOrder()
+
+Func printDeliverySlip()
+	WinActivate($EvosusWindow)
+	ControlClick($EvosusWindow, "Delivery Slip", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]")
+EndFunc ; printDeliverySlip()
+
+Func ctrlWRemap()
+	Send("{CTRLDOWN}{F4}{CTRLUP}")
+EndFunc ; altWRemap()
+
+Func altF4Remap()
+	Send("{ALTDOWN}{F4}{ALTUP}")
+EndFunc ; altQRemap()
+
+Func promoteInvoice()
+	WinActivate("Sales Order")
+	ControlClick("Sales Order", "Promote to Invoice >", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
+EndFunc ; promoteInvoice()
+
 Func taxCodeAbbr()
-	If UBound($orderArray) > 2 Then ; Check for an order first
-	; Why is "abbreviation" such a long word?
-	WinActivate($EvosusWindow, "")
-	If ($orderArray[1] = "Amazon") Or ($orderArray[1] = "Amazon.ca") Then
-		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "az")
-	ElseIf ($orderArray[1] = "esesstoves") Then
-		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "eb")
-	ElseIf ($orderArray[1] = "WalMart") Then
-		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
-	ElseIf ($orderArray[1] = "Earth Sense") Then
-		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
+	Global $poText = ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]")
+	if ($poText = "") Then
+		If UBound($orderArray) > 2 Then ; Check for an order first
+		; Why is "abbreviation" such a long word?
+		If ($orderArray[1] = "Amazon") Or ($orderArray[1] = "Amazon.ca") Then
+			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "az")
+		ElseIf ($orderArray[1] = "esesstoves") Then
+			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "eb")
+		ElseIf ($orderArray[1] = "WalMart") Then
+			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
+		ElseIf ($orderArray[1] = "Earth Sense") Then
+			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
+		EndIf
 	EndIf
-	; Taxes or not?
-	If (($orderArray[1] = "Cart") And ($orderArray[15] = "Wisconsin")) Then
-		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
+		; Taxes or not?
+		If (($orderArray[1] = "Cart") And ($orderArray[15] = "Wisconsin")) Then
+			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
+		Else
+			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
+		EndIf
 	Else
-		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
-	EndIf
-Else
-	MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-	orderInfo() ; Show order info box right away.
+		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+		orderInfo() ; Show order info box right away.
 EndIf
 EndFunc ; taxCodeAbbr()
 
