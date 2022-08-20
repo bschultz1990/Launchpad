@@ -238,6 +238,31 @@ Func testFunc()
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
+Func taxCodeAbbr()
+	If UBound($orderArray) > 2 Then ; Check for an order first
+	; Why is "abbreviation" such a long word?
+	WinActivate($EvosusWindow, "")
+	If ($orderArray[1] = "Amazon") Or ($orderArray[1] = "Amazon.ca") Then
+		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "az")
+	ElseIf ($orderArray[1] = "esesstoves") Then
+		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "eb")
+	ElseIf ($orderArray[1] = "WalMart") Then
+		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
+	ElseIf ($orderArray[1] = "Earth Sense") Then
+		ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
+	EndIf
+	; Taxes or not?
+	If (($orderArray[1] = "Cart") And ($orderArray[15] = "Wisconsin")) Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
+	Else
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
+	EndIf
+Else
+	MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+	orderInfo() ; Show order info box right away.
+EndIf
+EndFunc ; taxCodeAbbr()
+
 Func addDays($dayNum)
 	Local $MyDate = _DateAdd("D", $dayNum, _NowCalc())
 	Local $datePart, $timePart
@@ -306,10 +331,12 @@ EndFunc ; funcName()
 Func evosusStockLookup() ; Secret Stock Lookup Function! :)
 	WinActivate($EvosusWindow)
 	ControlClick($EvosusWindow, "Show Stock Status", 99) ; Click on "Show Stock Status"
+	taxCodeAbbr()
 EndFunc ; evosusStockLookup()
 
 Func evosusDeposit() ; Secret Evosus Deposit Function! :)
 	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:25]", "SelectString", "Parts")
+	taxCodeAbbr()
 	WinActivate($EvosusWindow, "")
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
@@ -869,7 +896,7 @@ Func newCstImport()
 
 	Else
 		MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-		orderInfo() ; Show user info box right away.
+		orderInfo() ; Show order info box right away.
 	EndIf
 EndFunc ; newCstImport()
 
@@ -892,7 +919,6 @@ Func payment()
 		ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
 	ElseIf $orderArray[1] = "Earth Sense" Then
 		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $pmtMemo[0]); Paste payment memo
-
 			If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
 				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
 				ControlCommand($EvosusWindow, "", "[ID:10]", "SelectString", "Credit Card - PayPal") ; Select Paypal
