@@ -239,7 +239,7 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-	GUICtrlSetData($statusBar, ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]"))
+
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -284,12 +284,12 @@ Func taxCodeAbbr()
   EndIf
   EndIf
   ; Taxes or not?
-  If $orderArray[1]="Cart" Then
+  If $orderArray[1]="Earth Sense" Then
     If ($orderArray[15]="Wisconsin") Then
       ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
-    Else
-      ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
     EndIf
+  Else
+    ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")
   EndIf
 EndFunc ; taxCodeAbbr()
 
@@ -487,14 +487,14 @@ Func wmAddress()
 EndFunc ; wmAddress()
 
 Func SetTextMenuLabels ()
-    GUICtrlSetData($Oos, "Out of Stock")
-    GUICtrlSetData($Fraud, "Fraud?")
-    GUICtrlSetData($Backordered, "Backordered")
-    GUICtrlSetData($BadAddressContacted, "Bad Address, Contacted")
-    GUICtrlSetData($BadAddress, "Email, Bad Address")
-    GUICtrlSetData($EmailTracking, "Email, Tracking")
-    GUICtrlSetData($EmailShippingChange, "Email, Shipping Change")
-    GUICtrlSetData($ExitButton, "Change Initials")
+  GUICtrlSetData($Oos, "Out of Stock")
+  GUICtrlSetData($Fraud, "Fraud?")
+  GUICtrlSetData($Backordered, "Backordered")
+  GUICtrlSetData($BadAddressContacted, "Bad Address, Contacted")
+  GUICtrlSetData($BadAddress, "Email, Bad Address")
+  GUICtrlSetData($EmailTracking, "Email, Tracking")
+  GUICtrlSetData($EmailShippingChange, "Email, Shipping Change")
+  GUICtrlSetData($ExitButton, "Change Initials")
 EndFunc
 
 Func showAmazonButtons()
