@@ -282,6 +282,7 @@ Func taxCodeAbbr()
       orderInfo() ; Show order info box right away.
     EndIf
   EndIf
+  EndIf
   ; Taxes or not?
   If $orderArray[1]="Cart" Then
     If ($orderArray[15]="Wisconsin") Then
