@@ -239,7 +239,7 @@ WEnd
 
 ; TEST FUNCTION SECTION
 Func testFunc()
-	GUICtrlSetData($statusBar, ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"))
+	GUICtrlSetData($statusBar, ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]"))
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
