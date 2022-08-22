@@ -265,30 +265,30 @@ Func altF4Remap()
 EndFunc ; altQRemap()
 
 Func taxCodeAbbr()
-	Global $poText = ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]")
-	if ($poText = "") Then
-		If UBound($orderArray) > 2 Then ; Check for an order first
-		; Why is "abbreviation" such a long word?
-		If ($orderArray[1] = "Amazon") Or ($orderArray[1] = "Amazon.ca") Then
-			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "az")
-		ElseIf ($orderArray[1] = "esesstoves") Then
-			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "eb")
-		ElseIf ($orderArray[1] = "WalMart") Then
-			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
-		ElseIf ($orderArray[1] = "Earth Sense") Then
-			ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
-		Else
-			MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
-			orderInfo() ; Show order info box right away.
-		EndIf
-	EndIf
-		; Taxes or not?
-		If $orderArray[1]="Cart" Then
-		  If ($orderArray[15]="Wisconsin") Then
-		    ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
-		  Else
-		    ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
-		EndIf
+  Global $poText = ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]")
+  If ($poText = "") Then
+    If UBound($orderArray) > 2 Then ; Check for an order first
+    ; Why is "abbreviation" such a long word?
+    If ($orderArray[1] = "Amazon") Or ($orderArray[1] = "Amazon.ca") Then
+      ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "az")
+    ElseIf ($orderArray[1] = "esesstoves") Then
+      ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "eb")
+    ElseIf ($orderArray[1] = "WalMart") Then
+      ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "wm")
+    ElseIf ($orderArray[1] = "Earth Sense") Then
+      ControlSetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "ct")
+    Else
+      MsgBox(64, "Missing Order Info.", "Double check order details with the info button.") ; Info box.
+      orderInfo() ; Show order info box right away.
+    EndIf
+  EndIf
+  ; Taxes or not?
+  If $orderArray[1]="Cart" Then
+    If ($orderArray[15]="Wisconsin") Then
+      ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
+    Else
+      ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
+  EndIf
 EndFunc ; taxCodeAbbr()
 
 Func addDays($dayNum)
