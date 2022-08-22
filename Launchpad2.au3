@@ -319,7 +319,7 @@ Func updateCustomer()
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
 	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
 	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
-	if ($CLWin <> 0) Then
+	If ($CLWin <> 0) Then
 		ControlClick("Customer Location", "","[CLASS:ThunderRT6CommandButton; INSTANCE:4]")
 		Local $CPhoneWin = WinWaitActive("New Phone Number", "", 5); Wait for New Phone Number to appear.
 		If ($CPhoneWin <> 0) Then
@@ -888,7 +888,7 @@ Func newCstImport()
 
 	canadaCheck()
 
-	; Enter Phone if order is not Amazon.com
+	; Enter Phone If order is not Amazon.com
 	If ($orderArray[1] <> "Amazon") Then
 		ClipPut($orderArray[17]) ; Load phone number
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
