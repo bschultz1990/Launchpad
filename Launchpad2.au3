@@ -288,6 +288,7 @@ Func taxCodeAbbr()
       ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
     Else
       ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
+    EndIf
   EndIf
 EndFunc ; taxCodeAbbr()
 
