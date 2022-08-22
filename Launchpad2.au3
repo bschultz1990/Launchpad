@@ -186,7 +186,7 @@ While 1
 	GUICtrlSetOnEvent($Btn_Order, "btnOrder")
 	HotKeySet("^!o", "btnOrder")
 
-	HotKeySet("!s", "addSalesOrder")
+	HotKeySet("!a", "addSalesOrder")
 	HotKeySet("!`", "printOrder")
 	HotKeySet("!d", "printDeliverySlip")
 	HotKeySet("!w", "ctrlWRemap")
