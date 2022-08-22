@@ -284,12 +284,11 @@ Func taxCodeAbbr()
 	EndIf
 		; Taxes or not?
 		If $orderArray[1]="Cart" Then
-		  if ($orderArray[15]="Wisconsin") Then
+		  If ($orderArray[15]="Wisconsin") Then
 		    ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Eau Claire 5.5%")
 		  Else
 		    ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:26]", "SelectString", "Out of State")		
 		EndIf
-EndIf
 EndFunc ; taxCodeAbbr()
 
 Func addDays($dayNum)
