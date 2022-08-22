@@ -186,11 +186,11 @@ While 1
 	GUICtrlSetOnEvent($Btn_Order, "btnOrder")
 	HotKeySet("^!o", "btnOrder")
 
+	HotKeySet("!s", "addSalesOrder")
 	HotKeySet("!`", "printOrder")
 	HotKeySet("!d", "printDeliverySlip")
 	HotKeySet("!w", "ctrlWRemap")
 	HotKeySet("!q", "altF4Remap")
-	HotKeySet("{F2}", "promoteInvoice")
 	HotKeySet("^!d", "evosusDeposit") ; Secret Evosus Deposit Function! :)
 	HotKeySet("^!s", "evosusStockLookup") ; Secret Stock Lookup Function! :)
 	HotKeySet("^l", "itemFocus") ; Secret item focus function.
@@ -243,6 +243,10 @@ Func testFunc()
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
+Func addSalesOrder()
+  ControlClick($EvosusWindow, "Add", "[CLASS:ThunderRT6CommandButton; INSTANCE:132]")
+EndFunc;addSalesOrder
+
 Func printOrder()
 	Send("{ALTDOWN}p{ALTUP}")
 EndFunc ; printOrder()
@@ -259,11 +263,6 @@ EndFunc ; altWRemap()
 Func altF4Remap()
 	Send("{ALTDOWN}{F4}{ALTUP}")
 EndFunc ; altQRemap()
-
-Func promoteInvoice()
-	WinActivate("Sales Order")
-	ControlClick("Sales Order", "Promote to Invoice >", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
-EndFunc ; promoteInvoice()
 
 Func taxCodeAbbr()
 	Global $poText = ControlGetText($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]")
