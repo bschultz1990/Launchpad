@@ -186,6 +186,7 @@ While 1
 	GUICtrlSetOnEvent($Btn_Order, "btnOrder")
 	HotKeySet("^!o", "btnOrder")
 
+	HotKeySet("{F2}", "deliverInvoice")
 	HotKeySet("!a", "addSalesOrder")
 	HotKeySet("!`", "printOrder")
 	HotKeySet("!d", "printDeliverySlip")
@@ -236,12 +237,18 @@ WEnd
 ; ----------------------------------------------------------------------
 ; 						BEGIN GENERAL FUNCTIONS
 ; ----------------------------------------------------------------------
-
 ; TEST FUNCTION SECTION
 Func testFunc()
 
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
+
+Func deliverInvoice()
+	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
+	ControlClick("Sales Order", "Promote to Invoice >", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
+	WinWaitActive("Invoice", "Sales Invoice", 10)
+	ControlClick($EvosusWindow, "Delivery Slip", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]")
+EndFunc ; deliverInvoice()
 
 Func addSalesOrder()
   ControlClick($EvosusWindow, "Add", "[CLASS:ThunderRT6CommandButton; INSTANCE:132]")
@@ -336,7 +343,6 @@ Func updateCustomer()
 			GUICtrlSetData($statusBar, "Confirmation box not found. :(")
 			Return
 			EndIf
-		Else
 		Return
 		EndIf
 		; you are here
@@ -835,7 +841,7 @@ EndFunc ; EmailFraud()
 
 Func EmailTracking()
     InitialsCheck()
-    ClipPut($EmailTrackingText & $SigDate)
+    ClipPut($EmailTrackingText)
     _ToolTip("Text copied!", 2000)
 Endfunc
 
