@@ -749,7 +749,6 @@ Func inputMemo()
 	
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
 	    $pmtMemo = StringRegExp($memo, $regexAMZ, 1)
-	    GUICtrlSetData($statusBar,"Amazon Payments: "&$pmtMemo[0])
 		hidePaymentButtons() ; Hide all payment buttons, but....
 		GUICtrlSetState($Btn_CtAmazon, $GUI_ENABLE + $GUI_SHOW); Show Amazon Payments button
 		GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
@@ -759,7 +758,6 @@ Func inputMemo()
 
 	    ElseIf(StringRegExp($memo, $regexPPL, 0)= 1) Then
 	        $pmtMemo = StringRegExp($memo, $regexPPL, 1)
-	        GUICtrlSetData($statusBar,"PayPal: " &$pmtMemo[0])
 			hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_CtPayPal, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
@@ -769,7 +767,6 @@ Func inputMemo()
 
 	    ElseIf(StringRegExp($memo, $regexCRD, 0) = 1) And (StringRegExp($pmtMemo, $regexPPL, 0)) = 0  Then
 	        $pmtMemo = StringRegExp($memo, $regexCRD, 1)
-	        GUICtrlSetData($statusBar,"Card: "&$pmtMemo[0])
 			hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_CtCard, $GUI_ENABLE + $GUI_SHOW)
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW) ; Show Resubmit Memo
