@@ -384,7 +384,6 @@ Func close()
 EndFunc
 
 Func btnOrder()
-	clearOrder() ; Clear all previous data.
 	importOrder()
 EndFunc ; $Btn_Order
 
@@ -649,7 +648,7 @@ Func clearOrder()
 	GUICtrlSetData($input, "")
 	GUICtrlSetData($orderArray, "") ; Clear order
 	GUICtrlSetData($orderBar, "") ; Clear order type
-	GUICtrlSetData($pmtMemo[0], "") ; Clear payment memo.
+	$pmtMemo[0] = "" ; Clear payment memo.
 	GUICtrlSetData($statusBar, "") ; Clear status bar
 	HotKeySet("^!a", "") ; Disable lookup hotkey
 	HotKeySet("^!c", "") ; Disable enter cst. hotkey
@@ -670,7 +669,8 @@ Func importOrder()
 		return
 	EndIf
 	
-	$orderArray = StringSplit($input, "	"); 
+	clearOrder() ; NOW clear all previous data.
+	$orderArray = StringSplit($input, "	");
 
 	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
@@ -751,8 +751,16 @@ Func inputMemo()
 
 	GUICtrlSetState($Label_Memo, $GUI_DISABLE + $GUI_HIDE); Hide memo notification
 	$memo = InputBox("Memo", "Copy and paste payment memo:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ; Keep memo box from being covered by main window.
-	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 	
+	; Don't overwrite the old memo info if we hit 'cancel.'
+	if @error = 1 Or $memo = "" Then
+		WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
+		return
+	EndIf
+
+	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
+	$pmtMemo = ""; NOW Clear the old payment memo.
+
 	If (StringRegExp($memo, $regexAMZ, 0) = 1) Then
 	    $pmtMemo = StringRegExp($memo, $regexAMZ, 1)
 		hidePaymentButtons() ; Hide all payment buttons, but....
@@ -781,7 +789,6 @@ Func inputMemo()
 			Return $pmtMemo[0]
 
 	    Else
-	        GUICtrlSetData($statusBar,"No match.")
 			HotKeySet("^!p") ; Clear previous payment hotkey.
 	        hidePaymentButtons() ; Hide all payment buttons, but....
 			GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
@@ -792,10 +799,11 @@ EndFunc ; inputMemo
 
 Func orderInfo()
 	_ArrayDisplay($orderArray, "Order Info")
-	If @error Then
-		MsgBox(64, "Missing Order Info.", "No data to display. Copy and paste an order from Shipworks to view details.") ; Info box.
-		importOrder() ; Display Order Info box
-	EndIf
+	_ArrayDisplay($pmtMemo, "Memo Info")
+	; If @error Then
+	; 	MsgBox(64, "Missing Order Info.", "No data to display. Copy and paste an order from Shipworks to view details.") ; Info box.
+	; 	importOrder() ; Display Order Info box
+	; EndIf
 EndFunc
 
 
@@ -940,6 +948,10 @@ Func newCstImport()
 EndFunc ; newCstImport()
 
 Func payment()
+	if ($pmtMemo[0] = "") Then
+		MsgBox(64, "Missing Payment Info.", "No payment memo provided. Paste in a payment memo to continue.") ; Info box.
+		Return
+	EndIf
 	WinActivate($EvosusWindow)
 	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
 	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:2]", "UnCheck", ""); Uncheck "Print order on Save"
