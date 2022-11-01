@@ -663,8 +663,13 @@ Func importOrder()
 	$mainWinPos = WinGetPos($AppTitle) ; Returns an array
 	WinSetOnTop($AppTitle, "", $WINDOWS_NOONTOP); Set main window not on top.
 	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ;Keep the window from hiding under the main window
-	$orderArray = StringSplit($input, "	")
+
+	if @error = 1 Or $input = "" Then
+		return
+	EndIf
 	
+	$orderArray = StringSplit($input, "	"); 
+
 	WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 	GUICtrlSetState($Btn_Memo, $GUI_ENABLE + $GUI_SHOW)
 
