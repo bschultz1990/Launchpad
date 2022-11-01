@@ -664,7 +664,9 @@ Func importOrder()
 	WinSetOnTop($AppTitle, "", $WINDOWS_NOONTOP); Set main window not on top.
 	$input = InputBox("Order:", "Copy and paste order:", "", "", 200, 128, $mainWinPos[0], $mainWinPos[1]) ;Keep the window from hiding under the main window
 
+	; Don't overwrite old order info if we hit "Cancel."
 	if @error = 1 Or $input = "" Then
+		WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 		return
 	EndIf
 	
@@ -686,7 +688,6 @@ Func importOrder()
 		hideEbayButtons()
 		hideCartButtons()
 		hideWmButtons()
-
 
 	ElseIf $orderArray[1] = "Earth Sense" Then
 		GUICtrlSetData($orderBar, "Cart Order")
