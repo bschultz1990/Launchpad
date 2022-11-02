@@ -198,7 +198,7 @@ While 1
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
 	HotKeySet("^{ENTER}", "selectCustomer")
-	HotKeySet("^!u", "updateCustomer"); Update Customer function
+	HotKeySet("^!u", "testFunc"); Update Customer function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -239,7 +239,30 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
+  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 400)
+  If (@error > 0) Then
+  	Return
+  EndIf
+  If ($changeAddress = "wh") Then
+  	Local $NewAddressInfo[6] ; Create a temporary array for New Address
+  	$NewAddressInfo[0] = "1850 Airport Exchange Blvd #200"
+  	$NewAddressInfo[1] = "Erlanger"
+  	_ArrayDisplay ($NewAddressInfo)
 
+Func updateCustomer()
+	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
+	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
+	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
+	; If ($CLWin <> 0) Then
+		
+	; Else
+	; Return
+	; EndIf
+EndFunc ; updateCustomer()
+
+  	ElseIf $changeAddress = "" Then
+  		updateCustomer()
+  EndIf
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
