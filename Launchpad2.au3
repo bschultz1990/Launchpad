@@ -177,6 +177,7 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 While 1
 	HotKeySet("^!q", "testFunc")
 
+	HotKeySet("^+`", "console")
 
 	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
 	
@@ -239,23 +240,17 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
-  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 200)
+
+EndFunc ; testFunc()
+; END TEST FUNCTION SECTION
+
+Func console()
+	Local $userCommand = InputBox("Console:", "Type a command. ? for help.", "", "", 200, 140)
   If (@error > 0) Then
   	Return
   EndIf
-  If ($changeAddress = "wh") Then
-  	Local $NewAddressInfo[6] ; Create a temporary array for New Address
-  	$NewAddressInfo[0] = "1850 Airport Exchange Blvd #200"
-  	$NewAddressInfo[1] = "Erlanger"
-  	_ArrayDisplay ($NewAddressInfo)
-
-
-
-  	ElseIf $changeAddress = "" Then
-  		updateCustomer()
-  EndIf
-EndFunc ; testFunc()
-; END TEST FUNCTION SECTION
+  Call($userCommand)
+EndFunc ; console()
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
