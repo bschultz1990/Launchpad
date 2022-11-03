@@ -198,7 +198,7 @@ While 1
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
 	HotKeySet("^{ENTER}", "selectCustomer")
-	HotKeySet("^!u", "updateCustomer"); Update Customer function
+	HotKeySet("^!u", "testFunc"); Update Customer function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -239,7 +239,21 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
+  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 200)
+  If (@error > 0) Then
+  	Return
+  EndIf
+  If ($changeAddress = "wh") Then
+  	Local $NewAddressInfo[6] ; Create a temporary array for New Address
+  	$NewAddressInfo[0] = "1850 Airport Exchange Blvd #200"
+  	$NewAddressInfo[1] = "Erlanger"
+  	_ArrayDisplay ($NewAddressInfo)
 
+
+
+  	ElseIf $changeAddress = "" Then
+  		updateCustomer()
+  EndIf
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -948,7 +962,7 @@ Func newCstImport()
 EndFunc ; newCstImport()
 
 Func payment()
-	if ($pmtMemo[0] = "") Then
+	if ($pmtMemo[0] = "" And $orderArray[1] = "Earth Sense") Then
 		MsgBox(64, "Missing Payment Info.", "No payment memo provided. Paste in a payment memo to continue.") ; Info box.
 		Return
 	EndIf
