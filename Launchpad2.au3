@@ -239,7 +239,7 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
-  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 400)
+  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 200)
   If (@error > 0) Then
   	Return
   EndIf
@@ -249,16 +249,7 @@ Func testFunc()
   	$NewAddressInfo[1] = "Erlanger"
   	_ArrayDisplay ($NewAddressInfo)
 
-Func updateCustomer()
-	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
-	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
-	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
-	; If ($CLWin <> 0) Then
-		
-	; Else
-	; Return
-	; EndIf
-EndFunc ; updateCustomer()
+
 
   	ElseIf $changeAddress = "" Then
   		updateCustomer()
@@ -971,7 +962,7 @@ Func newCstImport()
 EndFunc ; newCstImport()
 
 Func payment()
-	if ($pmtMemo[0] = "") Then
+	if ($pmtMemo[0] = "" And $orderArray[1] = "Earth Sense") Then
 		MsgBox(64, "Missing Payment Info.", "No payment memo provided. Paste in a payment memo to continue.") ; Info box.
 		Return
 	EndIf
