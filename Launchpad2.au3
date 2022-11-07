@@ -261,7 +261,7 @@ Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
 	ControlClick("Sales Order", "Promote to Invoice >", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
 	WinWaitActive("Invoice", "Sales Invoice", 10)
-	ControlClick($EvosusWindow, "Delivery Slip", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]")
+	; ControlClick($EvosusWindow, "Delivery Slip", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]")
 EndFunc ; deliverInvoice()
 
 Func addSalesOrder()
