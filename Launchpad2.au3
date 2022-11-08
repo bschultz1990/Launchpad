@@ -22,6 +22,7 @@
 
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
+#include <scripts\ExtInputBox.au3>
 
 
 AutoItSetOption("GUIOnEventMode", 1); Turn onEventMode On.
@@ -179,7 +180,7 @@ While 1
 
 	HotKeySet("^+`", "console")
 
-	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
+	GUISetOnEvent($GUI_EVENT_CLOSE, "closeMain")
 	
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
 	HotKeySet("^!i", "orderInfo")
@@ -199,7 +200,7 @@ While 1
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
 	HotKeySet("^{ENTER}", "selectCustomer")
-	HotKeySet("^!u", "testFunc"); Update Customer function
+	HotKeySet("^!u", "updateCustomer"); Update Customer function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -245,11 +246,15 @@ EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
 Func console()
-	Local $userCommand = InputBox("Console:", "Type a command. ? for help.", "", "", 200, 140)
-  If (@error > 0) Then
-  	Return
-  EndIf
-  Call($userCommand)
+	Local $cData = _ExtInputBox(">", "Command|Arguments (Optional. Separate by ,)", 1)
+	If ($cData = False) Then
+		Return
+	EndIf
+	Local $userArgs = StringSplit($cData[2],",")
+	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
+  _ArrayDisplay($userArgs)
+  ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
+  Call($cData[1], $userArgs)
 EndFunc ; console()
 
 Func deliverInvoice()
@@ -386,7 +391,7 @@ Func evosusDeposit() ; Secret Evosus Deposit Function! :)
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
 
-Func close()
+Func closeMain()
 	If MsgBox(4+32, "Exit?", "Are you sure you want to exit?", 0, $MainWindow) = 6 Then ; Yes
 		Exit
 	EndIf
@@ -410,7 +415,8 @@ Func wmWebsite()
 EndFunc ; wmWebsite()
 
 Func btnAzAddress()
-	ShellExecute($AmazonSearch & $orderArray[3])
+	Global $AmazonOrder = $AmazonSearch & $orderArray[3]
+	ShellExecute($AmazonOrder)
 	btnAddress()
 EndFunc ; btnAzAddress()
 
@@ -431,8 +437,6 @@ EndFunc ; $Btn_AzAddress
 Func bypassAndInvoice()
 	; Create a new yes/no msg box on top of everything else
 	Local $PaymentDetails = MsgBox(4+32+262144, "Info OK?", "Payment Details look good?", 0, $AppTitle)
-	; If msg box respons = $IDYES
-		; Continue the process.
 	
 	If ($PaymentDetails = $IDYES) Then
 		WinActivate ($EvosusWindow) ; Activate Evosus window
@@ -484,18 +488,21 @@ Func bypassAndInvoice()
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	ShellExecute($cartSearch[0] & $orderArray[2] & $cartSearch[1])
+	Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
+	ShellExecute($CartOrder)
 	btnAddress()
 EndFunc ; ctLookup()
 
 
 Func ebLook()
-	ShellExecute($ebaySearch & $orderArray[4])
+	Global $eBayOrder = $ebaySearch & $orderArray[4]
+	ShellExecute($eBayOrder)
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
 
 Func wmAddress()
-	ShellExecute($wmSearch)
+	Global $wmOrder = $wmSearch
+	ShellExecute($wmOrder)
 	btnAddress()
 	wmWebsite()
 EndFunc ; wmAddress()
