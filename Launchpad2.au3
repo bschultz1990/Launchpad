@@ -252,9 +252,12 @@ Func console()
 	EndIf
 	Local $userArgs = StringSplit($cData[2],",")
 	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
-  _ArrayDisplay($userArgs)
   ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
+  ; for $i = 1 to UBound($userArgs)-1 step 1
+  ; next
+  _ArrayDisplay($userArgs)
   Call($cData[1], $userArgs)
+
 EndFunc ; console()
 
 Func deliverInvoice()
@@ -479,9 +482,6 @@ Func bypassAndInvoice()
 		Else
 			Return
 		EndIf
-
-	; If msg box response = $IDNO
-		; Return (exit the function)
 		ElseIf	($PaymentDetails = $IDNO) Then
 			Return
 	EndIf
@@ -492,7 +492,6 @@ Func ctLookup()
 	ShellExecute($CartOrder)
 	btnAddress()
 EndFunc ; ctLookup()
-
 
 Func ebLook()
 	Global $eBayOrder = $ebaySearch & $orderArray[4]
