@@ -254,7 +254,9 @@ Func console()
 	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
   ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
   ; for $i = 1 to UBound($userArgs)-1 step 1
+	; STUFF HERE
   ; next
+	; ShellExecute($AmazonOrder)
   _ArrayDisplay($userArgs)
   Call($cData[1], $userArgs)
 
