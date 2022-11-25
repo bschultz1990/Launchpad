@@ -27,7 +27,9 @@
 
 AutoItSetOption("GUIOnEventMode", 1); Turn onEventMode On.
 _PopUpMenuSetOption ("OnEventMode", 1)
-Opt("WinTitleMatchMode", 2); Match any substring in the window title.
+AutoItSetOption("WinTitleMatchMode", 2); Match any substring in the window title.
+AutoItSetOption("ExpandVarStrings", 1); Expand variables when called like $var$.
+
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
@@ -253,14 +255,20 @@ Func console()
 	Local $userArgs = StringSplit($cData[2],",")
 	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
   ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
-  ; for $i = 1 to UBound($userArgs)-1 step 1
-	; STUFF HERE
-  ; next
-	; ShellExecute($AmazonOrder)
-  _ArrayDisplay($userArgs)
+  ; _ArrayDisplay($userArgs)
   Call($cData[1], $userArgs)
+  If ($cData[1] = "az") Then
+  	az()
+  EndIf
 
 EndFunc ; console()
+
+; ----------------CONSOLE FUNCTIONS-----------------
+Func az()
+	Global $AmazonOrder = $AmazonSearch & $orderArray[3]
+	ShellExecute ($AmazonOrder)
+EndFunc ; AzLookup()
+; --------------------------------------------------
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
