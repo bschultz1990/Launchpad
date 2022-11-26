@@ -22,11 +22,14 @@
 
 ;~ ; CUSTOM SCRIPTS
 #include <scripts\PopUpMenu.au3>
+#include <scripts\ExtInputBox.au3>
 
 
 AutoItSetOption("GUIOnEventMode", 1); Turn onEventMode On.
 _PopUpMenuSetOption ("OnEventMode", 1)
-Opt("WinTitleMatchMode", 2); Match any substring in the window title.
+AutoItSetOption("WinTitleMatchMode", 2); Match any substring in the window title.
+AutoItSetOption("ExpandVarStrings", 1); Expand variables when called like $var$.
+
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
@@ -177,8 +180,9 @@ WinSetOnTop($AppTitle, "", $WINDOWS_ONTOP); Set Launchpad on top.
 While 1
 	HotKeySet("^!q", "testFunc")
 
+	HotKeySet("^+`", "console")
 
-	GUISetOnEvent($GUI_EVENT_CLOSE, "close")
+	GUISetOnEvent($GUI_EVENT_CLOSE, "closeMain")
 	
 	GUICtrlSetOnEvent($Btn_Info, "orderInfo")
 	HotKeySet("^!i", "orderInfo")
@@ -198,7 +202,7 @@ While 1
 	HotKeySet("^!{NUMPADADD}", "printLabel") ; Secret print label function
 	HotKeySet("^!\", "printLabel"); Alternate print label key for numpad-less keyboards.
 	HotKeySet("^{ENTER}", "selectCustomer")
-	HotKeySet("^!u", "testFunc"); Update Customer function
+	HotKeySet("^!u", "updateCustomer"); Update Customer function
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -239,29 +243,38 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
-  Local $changeAddress = InputBox("Intermediary Warehouse", "Type 'wh' to paste intermediary warehouse information. Hit OK to update customer information manually.", "", "", 200, 200)
-  If (@error > 0) Then
-  	Return
-  EndIf
-  If ($changeAddress = "wh") Then
-  	Local $NewAddressInfo[6] ; Create a temporary array for New Address
-  	$NewAddressInfo[0] = "1850 Airport Exchange Blvd #200"
-  	$NewAddressInfo[1] = "Erlanger"
-  	_ArrayDisplay ($NewAddressInfo)
 
-
-
-  	ElseIf $changeAddress = "" Then
-  		updateCustomer()
-  EndIf
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
+
+Func console()
+	Local $cData = _ExtInputBox(">", "Command|Arguments (Optional. Separate by ,)", 1)
+	If ($cData = False) Then
+		Return
+	EndIf
+	Local $userArgs = StringSplit($cData[2],",")
+	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
+  ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
+  ; _ArrayDisplay($userArgs)
+  Call($cData[1], $userArgs)
+	If ($cData[1] = "az") Then
+		Global $AmazonOrder = $AmazonSearch & $orderArray[3]
+		ShellExecute ($AmazonOrder)
+	ElseIf ($cData[1] = "ct") Then
+		Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
+		ShellExecute($CartOrder)
+	ElseIf ($cData[1] = "eb") Then
+		Global $eBayOrder = $ebaySearch & $orderArray[4]
+		ShellExecute($eBayOrder)
+	ElseIf ($cData[1] = "wm") Then
+		Global $wmOrder = $wmSearch
+		ShellExecute($wmOrder)
+	EndIf
+EndFunc ; console()
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
 	ControlClick("Sales Order", "Promote to Invoice >", "[CLASS:ThunderRT6CommandButton; INSTANCE:8]")
-	WinWaitActive("Invoice", "Sales Invoice", 10)
-	; ControlClick($EvosusWindow, "Delivery Slip", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]")
 EndFunc ; deliverInvoice()
 
 Func addSalesOrder()
@@ -391,7 +404,7 @@ Func evosusDeposit() ; Secret Evosus Deposit Function! :)
 	ControlClick($EvosusWindow, "Make Deposit", 89) ; Click "Make Deposit"
 EndFunc ; evosusPayment()
 
-Func close()
+Func closeMain()
 	If MsgBox(4+32, "Exit?", "Are you sure you want to exit?", 0, $MainWindow) = 6 Then ; Yes
 		Exit
 	EndIf
@@ -415,7 +428,8 @@ Func wmWebsite()
 EndFunc ; wmWebsite()
 
 Func btnAzAddress()
-	ShellExecute($AmazonSearch & $orderArray[3])
+	Global $AmazonOrder = $AmazonSearch & $orderArray[3]
+	ShellExecute($AmazonOrder)
 	btnAddress()
 EndFunc ; btnAzAddress()
 
@@ -436,8 +450,6 @@ EndFunc ; $Btn_AzAddress
 Func bypassAndInvoice()
 	; Create a new yes/no msg box on top of everything else
 	Local $PaymentDetails = MsgBox(4+32+262144, "Info OK?", "Payment Details look good?", 0, $AppTitle)
-	; If msg box respons = $IDYES
-		; Continue the process.
 	
 	If ($PaymentDetails = $IDYES) Then
 		WinActivate ($EvosusWindow) ; Activate Evosus window
@@ -480,27 +492,26 @@ Func bypassAndInvoice()
 		Else
 			Return
 		EndIf
-
-	; If msg box response = $IDNO
-		; Return (exit the function)
 		ElseIf	($PaymentDetails = $IDNO) Then
 			Return
 	EndIf
 EndFunc ; bypassAndInvoice()
 
 Func ctLookup()
-	ShellExecute($cartSearch[0] & $orderArray[2] & $cartSearch[1])
+	Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
+	ShellExecute($CartOrder)
 	btnAddress()
 EndFunc ; ctLookup()
 
-
 Func ebLook()
-	ShellExecute($ebaySearch & $orderArray[4])
+	Global $eBayOrder = $ebaySearch & $orderArray[4]
+	ShellExecute($eBayOrder)
 	btnAddress() ; Look up address in Evosus.
 EndFunc ; ebLook()
 
 Func wmAddress()
-	ShellExecute($wmSearch)
+	Global $wmOrder = $wmSearch
+	ShellExecute($wmOrder)
 	btnAddress()
 	wmWebsite()
 EndFunc ; wmAddress()
