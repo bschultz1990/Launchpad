@@ -257,29 +257,20 @@ Func console()
   ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
   ; _ArrayDisplay($userArgs)
   Call($cData[1], $userArgs)
+	If ($cData[1] = "az") Then
+		Global $AmazonOrder = $AmazonSearch & $orderArray[3]
+		ShellExecute ($AmazonOrder)
+	ElseIf ($cData[1] = "ct") Then
+		Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
+		ShellExecute($CartOrder)
+	ElseIf ($cData[1] = "eb") Then
+		Global $eBayOrder = $ebaySearch & $orderArray[4]
+		ShellExecute($eBayOrder)
+	ElseIf ($cData[1] = "wm") Then
+		Global $wmOrder = $wmSearch
+		ShellExecute($wmOrder)
+	EndIf
 EndFunc ; console()
-
-; ----------------CONSOLE FUNCTIONS-----------------
-Func az()
-	Global $AmazonOrder = $AmazonSearch & $orderArray[3]
-	ShellExecute ($AmazonOrder)
-EndFunc ; AzLookup()
-
-Func ct()
-	Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
-	ShellExecute($CartOrder)
-EndFunc
-
-Func eb()
-	Global $eBayOrder = $ebaySearch & $orderArray[4]
-	ShellExecute($eBayOrder)
-EndFunc
-
-Func wm()
-	Global $wmOrder = $wmSearch
-	ShellExecute($wmOrder)
-EndFunc
-; ---------------END CONSOLE FUNCTIONS--------------
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
