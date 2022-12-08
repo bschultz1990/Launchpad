@@ -350,6 +350,12 @@ EndFunc ; selectCustomer()
 
 
 Func updateCustomer()
+	Local $uData = InputBox("Update Profile", "What would you like to update? Separate the options by commas:."
+	& @CRLF "Options:" & @CRLF &
+	"n = Customer first and last name" & @CRLF &
+	"a = Address lines 1 and 2" & @CRLF &
+	"p = Add a phone number" & @CRLF &
+	"e = Add email")
 	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
 	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
 	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
