@@ -984,8 +984,8 @@ Func newCstImport()
 
 	canadaCheck()
 
-	; Enter Phone If order is not Amazon.com
-	If ($orderArray[1] <> "Amazon") Then
+	; Enter Phone If order is not Amazon.com or if the order is from Canada
+	If ($orderArray[1] <> "Amazon") Or ($orderArray[18] = "CA") Then
 		ClipPut($orderArray[17]) ; Load phone number
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
