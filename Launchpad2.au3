@@ -359,7 +359,12 @@ EndFunc ; selectCustomer()
 
 
 Func updateCustomer()
-	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
+	If (WinExists("Customer Location") = 0) Then
+		ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
+		ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
+	EndIf
+
+	Local $CLWin = WinWaitActive("Customer Location", "", 2); Wait 5 seconds for win to appear.
 	If ($CLWin <> 0) Then
 		Local $uData = InputBox("Update Profile", "What would you like to update?" & @CRLF & _
 		"n = Customer first and last name" & @CRLF & _
@@ -369,7 +374,6 @@ Func updateCustomer()
 		If ($uData = False) Then
 			Return
 		Endif
-		; Local $uArgs = StringSplit($uData, ""); Empty delimiters. Each character is separated.
 		Local $uArgs = StringSplit($uData,""); Separate by character.
 		_ArraySort($uArgs,0,1); Alphabetize arguments.
 
@@ -379,13 +383,16 @@ Func updateCustomer()
 				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:6]", $orderArray[8]) ;Set first name
 				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:7]")
 				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:7]", $orderArray[9]) ;Set last name
-				
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:9]"); Focus Contact field
+				ControlSetText($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:9]", $orderArray[8] & " " & $orderArray[9]); Change Contact Name
+
 				ElseIf ($uArgs[$i] = "a") Then
 				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:14]")
 				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:14]", $orderArray[11]) ;Set address 1
 				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:13]")
 				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:13]", $orderArray[12]) ;Set address 2
-				
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"); Focus and change location name
+				ControlSetText($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", $orderArray[11])
 
 
 				ElseIf ($uArgs[$i] = "p") Then
@@ -413,13 +420,15 @@ Func updateCustomer()
 				If ($CEmailWin <> 0) Then
 					ControlFocus($CEmailWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]")
 					ControlSetText($CEmailWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", $orderArray[21]); Paste email
+					ControlClick("New Email Address", "", "[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click OK
+					ControlFocus($orderArray[21], "", "[CLASS:Button; INSTANCE:1]")
+					ControlClick($orderArray[21], "", "[CLASS:Button; INSTANCE:1]"); Click OK to confirm confirmation. Ugh.
+
 				EndIf
 
 				EndIf
 			Next
-		Else
-	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
-	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
+		Else; HERE
 	EndIf
 EndFunc ; updateCustomer()
 
@@ -981,9 +990,6 @@ Func newCstImport()
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-
-		;~ ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-		;~ ControlSetText("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]", $orderArray[17]); Paste phone number
 
 	EndIf
 
