@@ -243,7 +243,17 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
+	; using a 1D array
 
+#include <Array.au3>
+
+Local $avArray[3] = ["Zed", "Quinten", "Robert"]
+
+_ArrayDisplay($avArray, "BEFORE _ArraySort()")
+_ArraySort($avArray)
+_ArrayDisplay($avArray, "AFTER QuickSort ascending")
+_ArraySort($avArray, 1)
+_ArrayDisplay($avArray, "AFTER QuickSort descending")
 EndFunc ; testFunc()
 ; END TEST FUNCTION SECTION
 
@@ -348,33 +358,77 @@ Func selectCustomer()
 EndFunc ; selectCustomer()
 
 
-
 Func updateCustomer()
-	ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
-	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
-	Local $CLWin = WinWaitActive("Customer Location", "", 5); Wait 5 seconds for win to appear.
+	If (WinExists("Customer Location") = 0) Then
+		ControlFocus($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]")
+		ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:60]"); Click update button
+	EndIf
+
+	Local $CLWin = WinWaitActive("Customer Location", "", 2); Wait 5 seconds for win to appear.
 	If ($CLWin <> 0) Then
-		ControlClick("Customer Location", "","[CLASS:ThunderRT6CommandButton; INSTANCE:4]")
-		Local $CPhoneWin = WinWaitActive("New Phone Number", "", 5); Wait for New Phone Number to appear.
-		If ($CPhoneWin <> 0) Then
-			ClipPut($orderArray[17]); Load phone number
-			ControlFocus("New Phone Number", "","[CLASS:MSMaskWndClass; INSTANCE:1]") ; Focus phone # field.
-			ControlSend("New Phone Number", "", "[CLASS:MSMaskWndClass; INSTANCE:1]", "{CTRLDOWN}v{CTRLUP}"); Paste phone #
-			ControlClick("New Phone Number", "&OK", "[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click OK.
-			Local $CConWin = WinWaitActive("New Phone Number", 5); Wait for Confirmation window to appear.
-			If ($CConWin <> 0) Then
-				WinActivate("New Phone Number")
-				ControlFocus("New Phone Number", "OK", 2)
-				ControlClick("New Phone Number", "OK", 2); Click OK.
-			Else
-			GUICtrlSetData($statusBar, "Confirmation box not found. :(")
+		Local $uData = InputBox("Update Profile", "What would you like to update?" & @CRLF & _
+		"n = Customer first and last name" & @CRLF & _
+		"a = Address lines 1 and 2" & @CRLF & _
+		"p = Add a phone number" & @CRLF & _
+		"e = Add email")
+		If ($uData = False) Then
 			Return
-			EndIf
-		Return
-		EndIf
-		; you are here
-	Else
-	Return
+		Endif
+		Local $uArgs = StringSplit($uData,""); Separate by character.
+		_ArraySort($uArgs,0,1); Alphabetize arguments.
+
+		For $i = 1 To UBound($uArgs) - 1 Step 1
+			If ($uArgs[$i] = "n") Then
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:6]")
+				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:6]", $orderArray[8]) ;Set first name
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:7]")
+				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:7]", $orderArray[9]) ;Set last name
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:9]"); Focus Contact field
+				ControlSetText($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:9]", $orderArray[8] & " " & $orderArray[9]); Change Contact Name
+
+				ElseIf ($uArgs[$i] = "a") Then
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:14]")
+				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:14]", $orderArray[11]) ;Set address 1
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:13]")
+				ControlSetText($CLWin, "","[CLASS:ThunderRT6TextBox; INSTANCE:13]", $orderArray[12]) ;Set address 2
+				ControlFocus($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]"); Focus and change location name
+				ControlSetText($CLWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", $orderArray[11])
+
+
+				ElseIf ($uArgs[$i] = "p") Then
+				ControlClick("Customer Location", "","[CLASS:ThunderRT6CommandButton; INSTANCE:4]")
+				Local $CPhoneWin = WinWaitActive("New Phone Number", "", 5); Wait for New Phone Number to appear.
+				If ($CPhoneWin <> 0) Then
+					ClipPut($orderArray[17]); Load phone number
+					ControlFocus("New Phone Number", "","[CLASS:MSMaskWndClass; INSTANCE:1]") ; Focus phone # field.
+					ControlSend("New Phone Number", "", "[CLASS:MSMaskWndClass; INSTANCE:1]", "{CTRLDOWN}v{CTRLUP}"); Paste phone #
+					ControlClick("New Phone Number", "&OK", "[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click OK.
+					Local $CConWin = WinWaitActive("[Class:#32770]", 3); Wait for Confirmation window to appear.
+					If ($CConWin <> 0) Then
+						ControlFocus("New Phone Number", "OK", "[CLASS:Button; INSTANCE:1]")
+						ControlClick("New Phone Number", "OK", "[CLASS:Button; INSTANCE:1]"); Click OK.
+					Else
+						GUICtrlSetData($statusBar, "Confirmation box not found. :(")
+						Return
+					EndIf
+					Return
+				EndIf
+
+				ElseIf ($uArgs[$i] = "e") Then
+				ControlClick("Customer Location", "","[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click Add email
+				Local $CEmailWin = WinWaitActive("New Email Address", "", 2); Wait for email window
+				If ($CEmailWin <> 0) Then
+					ControlFocus($CEmailWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]")
+					ControlSetText($CEmailWin, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", $orderArray[21]); Paste email
+					ControlClick("New Email Address", "", "[CLASS:ThunderRT6CommandButton; INSTANCE:1]"); Click OK
+					ControlFocus($orderArray[21], "", "[CLASS:Button; INSTANCE:1]")
+					ControlClick($orderArray[21], "", "[CLASS:Button; INSTANCE:1]"); Click OK to confirm confirmation. Ugh.
+
+				EndIf
+
+				EndIf
+			Next
+		Else; HERE
 	EndIf
 EndFunc ; updateCustomer()
 
@@ -936,9 +990,6 @@ Func newCstImport()
 		ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
 		ControlFocus("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]") ; Focus phone number field
 		ControlSend("New Customer", "","[CLASS:MSMaskWndClass; INSTANCE:2]", "{CTRLDOWN}v{CTRLUP}") ; Paste phone number
-
-		;~ ControlClick("New Customer", "", 71); Click on the Postal code field to shock the State dropdown into submission when State lookup happens.
-		;~ ControlSetText("New Customer", "", "[CLASS:MSMaskWndClass; INSTANCE:2]", $orderArray[17]); Paste phone number
 
 	EndIf
 
