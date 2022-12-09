@@ -33,7 +33,7 @@ AutoItSetOption("ExpandVarStrings", 1); Expand variables when called like $var$.
 
 ; GUI SECTION
 Global $AppTitle = "Launchpad 2"
-Global $AppVersion = "v. 2.1.2"
+Global $AppVersion = "v. 2.2.0"
 Global $AppWidth = 400
 Global $AppHeight = 68
 ;~ Global $MainWindow = GUICreate($AppTitle, $AppWidth, $AppHeight, @DesktopWidth-$AppWidth-5, @DesktopHeight-$AppHeight-32)
