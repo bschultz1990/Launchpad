@@ -150,7 +150,19 @@ The first time you choose an option from the ones above, it will ask you for you
 
 ![paste](https://user-images.githubusercontent.com/19655298/162508029-bbdf38ee-d349-41fc-b7b8-cd6c639f92cb.PNG)
 
-# Hotkeys
+# Update Profile Dialog
+![image](https://user-images.githubusercontent.com/19655298/206808093-fa7deb31-2851-4d00-9d4a-510884b7962b.png)
+
+After you've loaded up an order into Launchpad, optionally go into a customer's profile and hit `CTRL-ALT-U` to invoke the dialog box. Type in any of the following to update or change parts of the profile:
+
+- **n** change first and last name
+- **a** change address line 1 and 2
+- **p** add a phone number
+- **e** add an email address
+
+
+
+# Hotkey Glossary
 
 If you mouse hover over a button, you will notice a tooltip with a hotkey. Here is a list of them if you'd like to use them in battle:
 
@@ -160,15 +172,17 @@ If you mouse hover over a button, you will notice a tooltip with a hotkey. Here 
 -   **Enter Cst.** `CTRL+ALT+c`
 -   **$** `CTRL+ALT+4`
 -   **Payment (AZ, Card, PayPal), Az Payment, eBay Payment, or WM Payment** `CTRL+ALT+p`
--   **Print Label** `CTRL+ALT+NUMPLUS`
+-   **Print Label** `CTRL+ALT+NUMPLUS` or `CTRL+ALT+\`
 -   **Quick Text Menu** `CTRL+`\` (Squiggle next to the 1)
 
-## Advanced Hotkeys
+## Special Hotkeys
 
-> **CAUTION** Use these only when your order screen is up and active.
+> **CAUTION** Use these only in their effective locations.
 
-| Name                  | Hotkey       | Description                                                          |
-| --------------------- | ------------ | -------------------------------------------------------------------- |
-| **Item Focus**        | `CTRL+l`     | Brings your cursor to the item input field on an order.              |
-| **Show Stock Status** | `CTRL+ALT+s` | Looks up the current stock of the order items.                       |
-| **Make Deposit**      | `CTRL+ALT+d` | Bring up the Deposit screen. Works anywhere inside the order window. |
+| Name                  | Hotkey       | Description                                                          | Effective Location     |
+| --------------------- | ------------ | -------------------------------------------------------------------- | -----------------------|
+| **Item Focus**        | `CTRL+l`     | Brings your cursor to the item input field on an order.              | Order window.          |
+| **Show Stock Status** | `CTRL+ALT+s` | Looks up the current stock of the order items.                       | Order window.          |
+| **Make Deposit**      | `CTRL+ALT+d` | Bring up the Deposit screen. Works anywhere inside the order window. | Order window.          |
+| **Update Customer**   | `CTRL+ALT+u` | Selectively update customer profile. Works inside a customer profile.| Customer profile.      |
+| **Dev. Console**      | `CTRL+ALT+`` | Call up a dev. console for advanced troubleshooting.                 | Anywhere               |
