@@ -993,9 +993,13 @@ Func newCstImport()
 
 	EndIf
 
-	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:22]", "EditPaste", $orderArray[8]) ;First Name
-	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:21]", "EditPaste", $orderArray[9]) ;Last Name
-	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:17]", "EditPaste", $orderArray[10]) ;Company Name
+	If ($orderArray[9] = "") Then ; If there's no last name, paste it into the Company field
+		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:17]", "EditPaste", $orderArray[8])
+	Else
+		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:22]", "EditPaste", $orderArray[8]) ;First Name
+		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:21]", "EditPaste", $orderArray[9]) ;Last Name
+		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:17]", "EditPaste", $orderArray[10]) ;Company Name
+	EndIf
 	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:26]", "EditPaste", $orderArray[11]); Address1
 	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:25]", "EditPaste", $orderArray[12]) ;Address2
 	ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:24]", "EditPaste", $orderArray[14]) ;City
