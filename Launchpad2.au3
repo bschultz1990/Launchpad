@@ -993,7 +993,7 @@ Func newCstImport()
 
 	EndIf
 
-	If ($orderArray[9] = "") Then ; If there's no last name, paste it into the Company field
+	If ($orderArray[9] = "") And ($orderArray[8] <> "") Then ; If there's no last name, paste first name into the Company field
 		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:17]", "EditPaste", $orderArray[8])
 	Else
 		ControlCommand($NCWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:22]", "EditPaste", $orderArray[8]) ;First Name
