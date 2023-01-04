@@ -204,6 +204,11 @@ While 1
 	HotKeySet("^{ENTER}", "selectCustomer")
 	HotKeySet("^!u", "updateCustomer"); Update Customer function
 
+	; RETURNS MODE
+	HotKeySet("!r", "addReturnOrder")
+	HotKeySet("!f", "formatREturnOrder")
+	HotkeySet("^!r", "refund")
+
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
 	GUICtrlSetOnEvent($Btn_AzAddress, "btnAzAddress") ; AMAZON
@@ -243,44 +248,68 @@ WEnd
 ; ----------------------------------------------------------------------
 ; TEST FUNCTION SECTION
 Func testFunc()
-	; using a 1D array
 
-#include <Array.au3>
+EndFunc ; console()
 
-Local $avArray[3] = ["Zed", "Quinten", "Robert"]
+Func addReturnOrder()
+	ControlClick("Evosus", "Add", "[CLASS:ThunderRT6CommandButton; INSTANCE:94]")
+EndFunc
 
-_ArrayDisplay($avArray, "BEFORE _ArraySort()")
-_ArraySort($avArray)
-_ArrayDisplay($avArray, "AFTER QuickSort ascending")
-_ArraySort($avArray, 1)
-_ArrayDisplay($avArray, "AFTER QuickSort descending")
-EndFunc ; testFunc()
-; END TEST FUNCTION SECTION
+Func formatReturnOrder()
+	ControlSetText($CLWin, "Evosus","[CLASS:ThunderRT6TextBox; INSTANCE:10]", "RTN-"& $orderArray[1]); Set PO Number
+  ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:28]", "SelectString", "Customer Pickup"); Set Distribution Method
+EndFunc
 
-Func console()
-	Local $cData = _ExtInputBox(">", "Command|Arguments (Optional. Separate by ,)", 1)
-	If ($cData = False) Then
+Func invoiceRefund()
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:1]", "UnCheck", ""); Uncheck "Print on Close"
+	Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
+	If ($EWinCheck <> 0) Then
+		ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:98]") ; Options > Invoice
+		Sleep(120)
+		Send("{DOWN}{DOWN}{DOWN}")
+		Sleep(120)
+		Send("{ENTER}")
+	Else
 		Return
 	EndIf
-	Local $userArgs = StringSplit($cData[2],",")
-	$userArgs[0] = "CallArgArray" ;Tell Call() to recognize this as a bunch of arguments.
-  ; TODO: Work on $userArgs[1] to $userArgs[N] and convert them from strings to variables.
-  ; _ArrayDisplay($userArgs)
-  Call($cData[1], $userArgs)
-	If ($cData[1] = "az") Then
-		Global $AmazonOrder = $AmazonSearch & $orderArray[3]
-		ShellExecute ($AmazonOrder)
-	ElseIf ($cData[1] = "ct") Then
-		Global $CartOrder = $cartSearch[0] & $orderArray[2] & $cartSearch[1]
-		ShellExecute($CartOrder)
-	ElseIf ($cData[1] = "eb") Then
-		Global $eBayOrder = $ebaySearch & $orderArray[4]
-		ShellExecute($eBayOrder)
-	ElseIf ($cData[1] = "wm") Then
-		Global $wmOrder = $wmSearch
-		ShellExecute($wmOrder)
+
+	If ($pmtMemo[0] = "" And $orderArray[1] = "Earth Sense") Then
+		MsgBox(64, "Missing Payment Info.", "No payment memo provided. Paste in a payment memo to continue.") ; Info box.
+		Return
 	EndIf
-EndFunc ; console()
+	WinActivate($EvosusWindow)
+	ControlClick($EvosusWindow, "Pay In Full", "[ID:8]") ; Click "Pay in Full."
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:1]", "UnCheck", ""); Uncheck "Print Payment Receipt"
+	
+	If ($orderArray[1] = "Amazon") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[3]); Amazon order number
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - Amazon") ; Select Amazon method.
+	ElseIf ($orderArray[1] = "Amazon.ca") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[3]); Amazon order number
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - Z-Amazon.CA") ; Select Amazon.ca method.
+	ElseIf ($orderArray[1] = "esesstoves") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[4]); Paste eBay order number
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - EBAY") ; Select Ebay payment method.
+	ElseIf ($orderArray[1] = "WalMart") Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[2]); Paste WalMart order number
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
+	ElseIf $orderArray[1] = "Earth Sense" Then
+		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $pmtMemo[0]); Paste payment memo
+			If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - PayPal") ; Select Paypal
+
+			ElseIf (StringRegExp($pmtMemo[0], $regexCRD, 0)) = 1 Then ; Check the card.
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - Visa/MC/Disc") ; ; Select Card
+
+			ElseIf (StringRegExp($pmtMemo[0], $regexAMZ, 0)) = 1  Then ; Check Amazon memo
+				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
+				ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon
+		EndIf
+	EndIf
+	bypassAndInvoice()
+EndFunc
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
