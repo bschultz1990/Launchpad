@@ -206,8 +206,9 @@ While 1
 
 	; RETURNS MODE
 	HotKeySet("!r", "addReturnOrder")
-	HotKeySet("!f", "formatREturnOrder")
-	HotkeySet("^!r", "refund")
+	HotKeySet("!s", "formatReturnOrder")
+	HotKeySet("!{ENTER}", "invoiceReturn")
+	HotKeySet("!o", "refund")
 
 	GUICtrlSetOnEvent($Btn_Memo, "inputMemo")
 
@@ -256,15 +257,17 @@ Func addReturnOrder()
 EndFunc
 
 Func formatReturnOrder()
-	ControlSetText($CLWin, "Evosus","[CLASS:ThunderRT6TextBox; INSTANCE:10]", "RTN-"& $orderArray[1]); Set PO Number
+	ControlSetText("Evosus", "", "[CLASS:ThunderRT6TextBox; INSTANCE:10]", "RTN-"& $orderArray[1]); Set PO Number
   ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:28]", "SelectString", "Customer Pickup"); Set Distribution Method
+	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:1]", "UnCheck", ""); Uncheck "Print on Close"
+	ControlClick($EvosusWindow, "", "[CLASS:SSTabCtlWndClass; INSTANCE:1]", "left", 1, 236, 11) ; Click on "Items" tab.
 EndFunc
 
-Func invoiceRefund()
-	ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6CheckBox; INSTANCE:1]", "UnCheck", ""); Uncheck "Print on Close"
-	Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
+Func invoiceReturn()
+	ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:3]"); Click "Save New Order"
+	Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 7)
 	If ($EWinCheck <> 0) Then
-		ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:98]") ; Options > Invoice
+		ControlClick($EvosusWindow, "Options", "[CLASS:ThunderRT6CommandButton; INSTANCE:98]") ; Options > Invoice
 		Sleep(120)
 		Send("{DOWN}{DOWN}{DOWN}")
 		Sleep(120)
@@ -272,8 +275,25 @@ Func invoiceRefund()
 	Else
 		Return
 	EndIf
+	; Sleep(500)
+	WinActivate($EvosusWindow)
+Local $EWinCheck = WinWaitActive ($EvosusWindow, "", 5)
+	If ($EWinCheck <> 0) Then
+		ControlClick($EvosusWindow, "Options", "[CLASS:ThunderRT6CommandButton; INSTANCE:98]") ; Options > Invoice
+		Sleep(120)
+		Send("{DOWN}{DOWN}{DOWN}")
+		Sleep(120)
+		Send("{ENTER}")
+	Else
+		Return
+	EndIf
+EndFunc
 
-	If ($pmtMemo[0] = "" And $orderArray[1] = "Earth Sense") Then
+Func refund()
+WinActivate($EvosusWindow)
+ControlClick($EvosusWindow, "", "[CLASS:ThunderRT6CommandButton; INSTANCE:2]"); Click "Refund"
+; Don't proceed if it's not a manual cart order and we don't have a payment memo.
+	If ($pmtMemo[0] = "" And $orderArray[1] = "Earth Sense" And StringRegExp($orderArray[2], "M$", 0) = 0) Then
 		MsgBox(64, "Missing Payment Info.", "No payment memo provided. Paste in a payment memo to continue.") ; Info box.
 		Return
 	EndIf
@@ -294,7 +314,11 @@ Func invoiceRefund()
 		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[2]); Paste WalMart order number
 		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - WalMart") ; Select WalMart method
 	ElseIf $orderArray[1] = "Earth Sense" Then
-		ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:2]", "EditPaste", $pmtMemo[0]); Paste payment memo
+		If (StringRegExp($orderArray[2], "M$", 0) = 1 And $orderArray[1] = "Earth Sense") Then ; Look for a manual Cart order.
+			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $orderArray[2]); Paste order as memo
+			Else
+			ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6TextBox; INSTANCE:3]", "EditPaste", $pmtMemo[0]); Paste payment memo
+		EndIf
 			If (StringRegExp($pmtMemo[0], $regexPPL, 0)) = 1  Then ; Check PayPal memo
 				ControlFocus($EvosusWindow, "", 10) ; Focus the dropdown control
 				ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - PayPal") ; Select Paypal
@@ -308,8 +332,39 @@ Func invoiceRefund()
 				ControlCommand($EvosusWindow, "", "[CLASS:ThunderRT6ComboBox; INSTANCE:1]", "SelectString", "Credit Card - Amazon Payments") ; Select Amazon
 		EndIf
 	EndIf
-	bypassAndInvoice()
-EndFunc
+	bypassRefund()
+EndFunc ; refund()
+
+Func bypassRefund()
+	; Create a new yes/no msg box on top of everything else
+	Local $PaymentDetails = MsgBox(4+32+262144, "Info OK?", "Payment Details look good?", 0, $AppTitle)
+	
+	If ($PaymentDetails = $IDYES) Then
+		WinActivate ($EvosusWindow) ; Activate Evosus window
+		ControlClick($EvosusWindow, "Save Refund >", "[CLASS:ThunderRT6CommandButton; INSTANCE:4]") ; Click "Save Payment"
+		Local $CCWin = WinWaitActive("Process Credit Card", "", 5)
+			If ($CCWin <> 0) Then
+			ControlFocus("Process Credit Card", "Bypass >", "[NAME:cmdBypass]")
+			ControlClick("Process Credit Card", "Bypass >", "[NAME:cmdBypass]") ; Click "Bypass >"
+			ElseIf ($CCWin = 0) Then
+			Return
+			EndIf
+		Local $CBWin = WinWaitActive("Confirm Bypass", "", 5) ; click "Yes"
+			If $CBWin <> 0 Then
+			ControlClick("Confirm Bypass", "", "[ID:6]")
+			ElseIf $CBWin = 0 Then
+			Return
+			EndIf
+		Local $PWin = WinWaitActive("Refund", "", 5) ; Wait for "Successfully saved payment"
+			If ($PWin <> 0) Then
+			ControlClick("Refund", "", "[ID:2]") ; Click "OK"
+			ElseIf ($PWin = 0) Then
+			Return
+			EndIf
+	ElseIf	($PaymentDetails = $IDNO) Then
+		Return
+	EndIf
+EndFunc ; bypassRefund()
 
 Func deliverInvoice()
 	ControlClick("Sales Order", "Select All", "[CLASS:ThunderRT6CommandButton; INSTANCE:5]")
