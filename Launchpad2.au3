@@ -206,7 +206,7 @@ While 1
 
 	; RETURNS MODE
 	HotKeySet("!r", "addReturnOrder")
-	HotKeySet("!s", "formatReturnOrder")
+	HotKeySet("!x", "formatReturnOrder")
 	HotKeySet("!{ENTER}", "invoiceReturn")
 	HotKeySet("!o", "refund")
 
